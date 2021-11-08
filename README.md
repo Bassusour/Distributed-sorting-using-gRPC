@@ -1,1 +1,1 @@
-# cs434_project
+We are team Orange (Edwige Weber and Bastian Preisel)
