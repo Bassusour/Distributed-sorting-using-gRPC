@@ -1,1 +1,1 @@
-["io.grpc.examples.helloworld.HelloWorldClient","io.grpc.examples.helloworld.HelloWorldServer"]
+["HelloWorldClient","HelloWorldServer"]
