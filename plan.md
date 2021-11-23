@@ -1,6 +1,6 @@
 | Date                     | Bastian                                           | Edwige                                                |
 |--------------------------|---------------------------------------------------|-------------------------------------------------------|
-| Week 45                  |                   Learn netty                 | Learn netty                                        |
+| Week 45                  |                   Learn protobuf and gRPC                 | Learn protobuf and gRPC                                        |
 |                          | Designing for connection<br>and messaging         | Design for merge <br>and partition                    |
 | Week 46                  | Designing for connection<br>and messaging         | Design for merge <br>and partition                    |
 | Week 47<br>(Milestone 1) |          Implement slaves <br>and master          | Generate data <br>and sort locally                    |
