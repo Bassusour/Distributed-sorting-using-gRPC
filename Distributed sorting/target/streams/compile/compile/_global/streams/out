@@ -1,5 +1,0 @@
-[0m[[0m[31merror[0m] [0m[0m/home/bastian_preisel/gitProjects/cs434_project/Distributed sorting/src/main/scala/io/grpc/examples/helloworld/HelloWorldClient.scala:53:7: cannot override final member:[0m
-[0m[[0m[31merror[0m] [0m[0mfinal def main(args: Array[String]): Unit (defined in trait App)[0m
-[0m[[0m[31merror[0m] [0m[0m  def main(args: Array[String]): Unit = {[0m
-[0m[[0m[31merror[0m] [0m[0m      ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m

@@ -1,7 +1,0 @@
-[0m[[0m[0mdebug[0m] [0m[0m> Exec(run, Some(923bd23d-62ad-4edb-9b1b-b8ab0f27b5d9), Some(CommandSource(console0)))[0m
-[0m[[0m[0mdebug[0m] [0m[0mEvaluating tasks: Compile / run[0m
-[0m[[0m[0mdebug[0m] [0m[0mRunning task... Cancel: Signal, check cycles: false, forcegc: true[0m
-[0m[[0m[0minfo[0m] [0m[0mCompiling 1 protobuf files to /home/bastian_preisel/gitProjects/cs434_project/Distributed sorting/target/scala-2.13/src_managed/main/scalapb[0m
-[0m[[0m[0minfo[0m] [0m[0mcompiling 6 Scala sources to /home/bastian_preisel/gitProjects/cs434_project/Distributed sorting/target/scala-2.13/classes ...[0m
-[0m[[0m[32msuccess[0m] [0m[0mTotal time: 11 s, completed Nov 23, 2021, 4:58:07 PM[0m
-[0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m

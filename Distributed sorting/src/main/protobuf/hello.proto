@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-package com.example.protos;
-
 // The greeting service definition.
 service Greeter {
   // Sends a greeting
