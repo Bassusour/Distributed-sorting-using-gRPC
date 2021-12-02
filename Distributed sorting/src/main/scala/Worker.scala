@@ -1,5 +1,6 @@
 // package io.grpc.examples.helloworld
 
+import java.time._
 import java.util.concurrent.TimeUnit
 import java.util.logging.{Level, Logger}
 import protoGreet.hello.{GreeterGrpc, GreeterRequest, ID, KeyRange, DummyText}
@@ -12,6 +13,7 @@ object Worker {
   def apply(host: String, port: Int): Worker = {
     val channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build
     val blockingStub = GreeterGrpc.blockingStub(channel)
+    
     println(channel);
     println(blockingStub);
     new Worker(channel, blockingStub)
@@ -23,6 +25,13 @@ object Worker {
       val user = "Bastian"
       client.greet(user)
       client.sendKeyRange("abc", "def")
+
+      while(!client.askIfDonePartitioning()) {
+        Thread.sleep(1000)
+      }
+      
+      client.getPartitions()
+
     } finally {
       client.shutdown()
     }
@@ -43,7 +52,7 @@ class Worker private(
   var id_ = 0;
 
   def greet(greeting: String): Unit = {
-    logger.info("Will try to greet " + greeting + " ...")
+    logger.info("Will try to greet as " + greeting + " ...")
     val request = GreeterRequest(greeting = greeting)
     val response = blockingStub.assignID(request)
     logger.info("ID: " + response.id)
@@ -55,6 +64,25 @@ class Worker private(
     val request = KeyRange(minKey = min, maxKey = max)
     val response = blockingStub.determineKeyRange(request)
     logger.info(response.dummyText)
+  }
+
+  def askIfDonePartitioning(): Boolean = {
+    logger.info("Sending key range ...")
+    val request = DummyText(dummyText = "Are you done partitioning?")
+    val response = blockingStub.isDonePartitioning(request)
+    logger.info(response.dummyText)
+    if(response.dummyText == "Received all key ranges") {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  def getPartitions(): Unit = {
+    logger.info("Asking for partitions")
+    val request = DummyText(dummyText = "Can I get partitions plz? :)")
+    val response = blockingStub.sendPartitionedValues(request)
+    logger.info("Seq: " + response.partitions + " id: " + response.id)
   }
 }
 

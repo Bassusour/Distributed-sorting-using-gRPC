@@ -9,7 +9,7 @@ import io.grpc.{Server, ServerBuilder}
 import io.grpc.ServerInterceptors;
 import io.grpc.stub.StreamObserver;
 
-import protoGreet.hello.{GreeterGrpc, GreeterRequest, ID, KeyRange, DummyText}
+import protoGreet.hello.{GreeterGrpc, GreeterRequest, ID, KeyRange, DummyText, PartitionedValue, Partition}
 import scala.language.postfixOps
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -26,8 +26,8 @@ object Master {
 
   def main(args: Array[String]): Unit = {
     print("Enter number of workers (int): ")
-    val numOfWorkers = StdIn.readInt()
-    val server = new Master(ExecutionContext.global, numOfWorkers)
+    val noWorkers = StdIn.readInt()
+    val server = new Master(ExecutionContext.global, noWorkers)
     server.start()
     server.blockUntilShutdown()
   }
@@ -35,12 +35,13 @@ object Master {
   private val port = 50051
 }
 
-class Master(executionContext: ExecutionContext, numOfWorkers: Int) { self =>
+class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
   // JwtServerInterceptor jwtInterceptor = new JwtServerInterceptor(Constant.JWT_SECRET);
   private[this] var server: Server = null
-  private var workerCount: Int = 0;
-  private var globalMinKey = ""
-  private var globalMaxKey = ""
+  private var workerID: Int = 0;
+  private var globalMinKey = "~"
+  private var globalMaxKey = " "
+  private var noOfReceivedData = 0
 
   private def start(): Unit = {
     server = ServerBuilder.forPort(Master.port)
@@ -70,8 +71,8 @@ class Master(executionContext: ExecutionContext, numOfWorkers: Int) { self =>
   private class GreeterImpl extends GreeterGrpc.Greeter {
     
     override def assignID(req: GreeterRequest) = {
-      workerCount += 1;
-      val reply = ID(id = workerCount)
+      workerID += 1;
+      val reply = ID(id = workerID)
       Future.successful(reply)
     }
 
@@ -84,9 +85,33 @@ class Master(executionContext: ExecutionContext, numOfWorkers: Int) { self =>
       if( max > globalMaxKey) {
         globalMaxKey = max
       }
-
+      noOfReceivedData += 1
       val reply = DummyText(dummyText = "Received key range")
       Future.successful(reply)
       }
+
+    override def isDonePartitioning(req: DummyText) = {
+      if(noOfReceivedData != noWorkers) {
+        val reply = DummyText(dummyText = "Still waiting for more data")
+        Future.successful(reply)
+      } else {
+        val reply = DummyText(dummyText = "Received all key ranges")
+        Future.successful(reply)
+      }
     }
+
+    override def sendPartitionedValues(req: DummyText) = {
+      val minNum = globalMinKey.charAt(0).toInt
+      val maxnum = globalMaxKey.charAt(0).toInt
+
+      val arr = new Array[String](noWorkers)
+      for( i <- 0 to arr.length - 1){
+         arr(i) = ((i+1) * (maxnum-minNum)/noWorkers + minNum).toChar.toString
+      }
+
+      val reply = PartitionedValue(partitions = Seq(Partition(arr(0), arr(0))), 2)
+      Future.successful(reply)
+
+    }
+  }
 }

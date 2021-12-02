@@ -5,7 +5,8 @@ package protoGreet;
 service Greeter {
   rpc determineKeyRange(KeyRange) returns (DummyText) {}
   rpc assignID(GreeterRequest) returns (ID) {}
-  
+  rpc isDonePartitioning(DummyText) returns (DummyText) {}
+  rpc sendPartitionedValues(DummyText) returns (PartitionedValue) {}
 }
 
 message KeyRange {
@@ -23,4 +24,14 @@ message ID {
 
 message DummyText {
   string dummyText = 1;
+}
+
+message PartitionedValue {
+  repeated Partition partitions = 1;
+  int32 id = 2;
+}
+
+message Partition {
+  string minVal = 1;
+  string maxVal = 2;
 }

@@ -21,17 +21,41 @@ object GreeterGrpc {
       .setSchemaDescriptor(_root_.scalapb.grpc.ConcreteProtoMethodDescriptorSupplier.fromMethodDescriptor(protoGreet.hello.HelloProto.javaDescriptor.getServices().get(0).getMethods().get(1)))
       .build()
   
+  val METHOD_IS_DONE_PARTITIONING: _root_.io.grpc.MethodDescriptor[protoGreet.hello.DummyText, protoGreet.hello.DummyText] =
+    _root_.io.grpc.MethodDescriptor.newBuilder()
+      .setType(_root_.io.grpc.MethodDescriptor.MethodType.UNARY)
+      .setFullMethodName(_root_.io.grpc.MethodDescriptor.generateFullMethodName("protoGreet.Greeter", "isDonePartitioning"))
+      .setSampledToLocalTracing(true)
+      .setRequestMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoGreet.hello.DummyText])
+      .setResponseMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoGreet.hello.DummyText])
+      .setSchemaDescriptor(_root_.scalapb.grpc.ConcreteProtoMethodDescriptorSupplier.fromMethodDescriptor(protoGreet.hello.HelloProto.javaDescriptor.getServices().get(0).getMethods().get(2)))
+      .build()
+  
+  val METHOD_SEND_PARTITIONED_VALUES: _root_.io.grpc.MethodDescriptor[protoGreet.hello.DummyText, protoGreet.hello.PartitionedValue] =
+    _root_.io.grpc.MethodDescriptor.newBuilder()
+      .setType(_root_.io.grpc.MethodDescriptor.MethodType.UNARY)
+      .setFullMethodName(_root_.io.grpc.MethodDescriptor.generateFullMethodName("protoGreet.Greeter", "sendPartitionedValues"))
+      .setSampledToLocalTracing(true)
+      .setRequestMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoGreet.hello.DummyText])
+      .setResponseMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoGreet.hello.PartitionedValue])
+      .setSchemaDescriptor(_root_.scalapb.grpc.ConcreteProtoMethodDescriptorSupplier.fromMethodDescriptor(protoGreet.hello.HelloProto.javaDescriptor.getServices().get(0).getMethods().get(3)))
+      .build()
+  
   val SERVICE: _root_.io.grpc.ServiceDescriptor =
     _root_.io.grpc.ServiceDescriptor.newBuilder("protoGreet.Greeter")
       .setSchemaDescriptor(new _root_.scalapb.grpc.ConcreteProtoFileDescriptorSupplier(protoGreet.hello.HelloProto.javaDescriptor))
       .addMethod(METHOD_DETERMINE_KEY_RANGE)
       .addMethod(METHOD_ASSIGN_ID)
+      .addMethod(METHOD_IS_DONE_PARTITIONING)
+      .addMethod(METHOD_SEND_PARTITIONED_VALUES)
       .build()
   
   trait Greeter extends _root_.scalapb.grpc.AbstractService {
     override def serviceCompanion = Greeter
     def determineKeyRange(request: protoGreet.hello.KeyRange): scala.concurrent.Future[protoGreet.hello.DummyText]
     def assignID(request: protoGreet.hello.GreeterRequest): scala.concurrent.Future[protoGreet.hello.ID]
+    def isDonePartitioning(request: protoGreet.hello.DummyText): scala.concurrent.Future[protoGreet.hello.DummyText]
+    def sendPartitionedValues(request: protoGreet.hello.DummyText): scala.concurrent.Future[protoGreet.hello.PartitionedValue]
   }
   
   object Greeter extends _root_.scalapb.grpc.ServiceCompanion[Greeter] {
@@ -54,6 +78,20 @@ object GreeterGrpc {
             serviceImpl.assignID(request).onComplete(scalapb.grpc.Grpc.completeObserver(observer))(
               executionContext)
         }))
+      .addMethod(
+        METHOD_IS_DONE_PARTITIONING,
+        _root_.io.grpc.stub.ServerCalls.asyncUnaryCall(new _root_.io.grpc.stub.ServerCalls.UnaryMethod[protoGreet.hello.DummyText, protoGreet.hello.DummyText] {
+          override def invoke(request: protoGreet.hello.DummyText, observer: _root_.io.grpc.stub.StreamObserver[protoGreet.hello.DummyText]): Unit =
+            serviceImpl.isDonePartitioning(request).onComplete(scalapb.grpc.Grpc.completeObserver(observer))(
+              executionContext)
+        }))
+      .addMethod(
+        METHOD_SEND_PARTITIONED_VALUES,
+        _root_.io.grpc.stub.ServerCalls.asyncUnaryCall(new _root_.io.grpc.stub.ServerCalls.UnaryMethod[protoGreet.hello.DummyText, protoGreet.hello.PartitionedValue] {
+          override def invoke(request: protoGreet.hello.DummyText, observer: _root_.io.grpc.stub.StreamObserver[protoGreet.hello.PartitionedValue]): Unit =
+            serviceImpl.sendPartitionedValues(request).onComplete(scalapb.grpc.Grpc.completeObserver(observer))(
+              executionContext)
+        }))
       .build()
   }
   
@@ -61,6 +99,8 @@ object GreeterGrpc {
     def serviceCompanion = Greeter
     def determineKeyRange(request: protoGreet.hello.KeyRange): protoGreet.hello.DummyText
     def assignID(request: protoGreet.hello.GreeterRequest): protoGreet.hello.ID
+    def isDonePartitioning(request: protoGreet.hello.DummyText): protoGreet.hello.DummyText
+    def sendPartitionedValues(request: protoGreet.hello.DummyText): protoGreet.hello.PartitionedValue
   }
   
   class GreeterBlockingStub(channel: _root_.io.grpc.Channel, options: _root_.io.grpc.CallOptions = _root_.io.grpc.CallOptions.DEFAULT) extends _root_.io.grpc.stub.AbstractStub[GreeterBlockingStub](channel, options) with GreeterBlockingClient {
@@ -70,6 +110,14 @@ object GreeterGrpc {
     
     override def assignID(request: protoGreet.hello.GreeterRequest): protoGreet.hello.ID = {
       _root_.scalapb.grpc.ClientCalls.blockingUnaryCall(channel, METHOD_ASSIGN_ID, options, request)
+    }
+    
+    override def isDonePartitioning(request: protoGreet.hello.DummyText): protoGreet.hello.DummyText = {
+      _root_.scalapb.grpc.ClientCalls.blockingUnaryCall(channel, METHOD_IS_DONE_PARTITIONING, options, request)
+    }
+    
+    override def sendPartitionedValues(request: protoGreet.hello.DummyText): protoGreet.hello.PartitionedValue = {
+      _root_.scalapb.grpc.ClientCalls.blockingUnaryCall(channel, METHOD_SEND_PARTITIONED_VALUES, options, request)
     }
     
     override def build(channel: _root_.io.grpc.Channel, options: _root_.io.grpc.CallOptions): GreeterBlockingStub = new GreeterBlockingStub(channel, options)
@@ -82,6 +130,14 @@ object GreeterGrpc {
     
     override def assignID(request: protoGreet.hello.GreeterRequest): scala.concurrent.Future[protoGreet.hello.ID] = {
       _root_.scalapb.grpc.ClientCalls.asyncUnaryCall(channel, METHOD_ASSIGN_ID, options, request)
+    }
+    
+    override def isDonePartitioning(request: protoGreet.hello.DummyText): scala.concurrent.Future[protoGreet.hello.DummyText] = {
+      _root_.scalapb.grpc.ClientCalls.asyncUnaryCall(channel, METHOD_IS_DONE_PARTITIONING, options, request)
+    }
+    
+    override def sendPartitionedValues(request: protoGreet.hello.DummyText): scala.concurrent.Future[protoGreet.hello.PartitionedValue] = {
+      _root_.scalapb.grpc.ClientCalls.asyncUnaryCall(channel, METHOD_SEND_PARTITIONED_VALUES, options, request)
     }
     
     override def build(channel: _root_.io.grpc.Channel, options: _root_.io.grpc.CallOptions): GreeterStub = new GreeterStub(channel, options)
