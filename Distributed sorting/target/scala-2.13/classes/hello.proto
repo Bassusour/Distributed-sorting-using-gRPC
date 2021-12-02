@@ -1,17 +1,26 @@
 syntax = "proto3";
 
-// The greeting service definition.
+package protoGreet;
+
 service Greeter {
-  // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc determineKeyRange(KeyRange) returns (DummyText) {}
+  rpc assignID(GreeterRequest) returns (ID) {}
+  
 }
 
-// The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
+message KeyRange {
+  string minKey = 1;
+  string maxKey = 2;
 }
 
-// The response message containing the greetings
-message HelloReply {
-  string message = 1;
+message GreeterRequest {
+  string greeting = 1;
+}
+
+message ID {
+  int32 id = 1;
+}
+
+message DummyText {
+  string dummyText = 1;
 }

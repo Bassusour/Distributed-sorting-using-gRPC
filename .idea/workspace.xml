@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e80a009d-9870-4a87-a0ab-8f78a500357c" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/src/main/protobuf/hello.proto" beforeDir="false" afterPath="$PROJECT_DIR$/Distributed sorting/src/main/protobuf/hello.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/src/main/scala/HelloWorldClient.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/src/main/scala/HelloWorldServer.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/HelloWorldClient$.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/HelloWorldClient.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/HelloWorldServer$.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/HelloWorldServer$GreeterImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/HelloWorldServer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello.proto" beforeDir="false" afterPath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/GreeterGrpc$.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/GreeterGrpc$Greeter$$anon$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/GreeterGrpc$Greeter$.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/GreeterGrpc$Greeter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/GreeterGrpc$GreeterBlockingClient.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/GreeterGrpc$GreeterBlockingStub$.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/GreeterGrpc$GreeterBlockingStub.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/GreeterGrpc$GreeterStub$.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/GreeterGrpc$GreeterStub.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/GreeterGrpc.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/HelloProto$.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/HelloProto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/HelloReply$.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/HelloReply$HelloReplyLens.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/HelloReply.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/HelloRequest$.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/HelloRequest$HelloRequestLens.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/classes/hello/HelloRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/src_managed/main/scalapb/hello/GreeterGrpc.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/src_managed/main/scalapb/hello/HelloProto.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/src_managed/main/scalapb/hello/HelloReply.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Distributed sorting/target/scala-2.13/src_managed/main/scalapb/hello/HelloRequest.scala" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="1" />
+  </component>
+  <component name="ProjectId" id="21Pm19ietVW0x7KcUQBuCSJF1wR" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e80a009d-9870-4a87-a0ab-8f78a500357c" name="Default Changelist" comment="" />
+      <created>1637850878897</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1637850878897</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.proto" />
+  </component>
+</project>
