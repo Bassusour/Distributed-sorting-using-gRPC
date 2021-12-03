@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package protoDistrSorting;
+
+service DistrSorting {
+  rpc determineKeyRange(KeyRange) returns (DummyText) {}
+  rpc assignID(DummyText) returns (ID) {}
+  rpc isDonePartitioning(DummyText) returns (DummyText) {}
+  rpc sendPartitionedValues(DummyText) returns (PartitionedValues) {}
+}
+
+message KeyRange {
+  string minKey = 1;
+  string maxKey = 2;
+}
+
+message ID {
+  int32 id = 1;
+}
+
+message DummyText {
+  string dummyText = 1;
+}
+
+message PartitionedValues {
+  repeated Partition partitions = 1;
+}
+
+message Partition {
+  string minVal = 1;
+  string maxVal = 2;
+}

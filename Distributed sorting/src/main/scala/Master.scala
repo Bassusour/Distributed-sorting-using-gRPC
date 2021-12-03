@@ -1,5 +1,3 @@
-// package io.grpc.examples.helloworld
-
 import java.util.logging.Logger
 import scala.io.StdIn
 
@@ -9,16 +7,12 @@ import io.grpc.{Server, ServerBuilder}
 import io.grpc.ServerInterceptors;
 import io.grpc.stub.StreamObserver;
 
-import protoGreet.hello.{GreeterGrpc, GreeterRequest, ID, KeyRange, DummyText, PartitionedValues, Partition}
+import protoDistrSorting.distrSort.{DistrSortingGrpc, ID, KeyRange, DummyText, PartitionedValues, Partition}
 import scala.language.postfixOps
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
 import scala.concurrent.duration.Duration
-// import java.time.Duration
-// import scala.compiletime.ops.boolean
-
-// import com.example.grpc.Constant;
 
 // Companion object
 object Master {
@@ -45,7 +39,7 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
 
   private def start(): Unit = {
     server = ServerBuilder.forPort(Master.port)
-                .addService(GreeterGrpc.bindService(new GreeterImpl, executionContext))
+                .addService(DistrSortingGrpc.bindService(new DistrSortingImpl, executionContext))
                 // .intercept(new IPInterceptor())
                 .build.start
     Master.logger.info("Server started " + server)
@@ -68,9 +62,9 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
     }
   }
 
-  private class GreeterImpl extends GreeterGrpc.Greeter {
+  private class DistrSortingImpl extends DistrSortingGrpc.DistrSorting {
     
-    override def assignID(req: GreeterRequest) = {
+    override def assignID(req: DummyText) = {
       val reply = ID(id = workerID)
       workerID += 1;
       Future.successful(reply)
