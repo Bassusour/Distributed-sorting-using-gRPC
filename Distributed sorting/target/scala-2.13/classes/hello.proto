@@ -6,7 +6,7 @@ service Greeter {
   rpc determineKeyRange(KeyRange) returns (DummyText) {}
   rpc assignID(GreeterRequest) returns (ID) {}
   rpc isDonePartitioning(DummyText) returns (DummyText) {}
-  rpc sendPartitionedValues(DummyText) returns (PartitionedValue) {}
+  rpc sendPartitionedValues(DummyText) returns (PartitionedValues) {}
 }
 
 message KeyRange {
@@ -26,9 +26,8 @@ message DummyText {
   string dummyText = 1;
 }
 
-message PartitionedValue {
+message PartitionedValues {
   repeated Partition partitions = 1;
-  int32 id = 2;
 }
 
 message Partition {

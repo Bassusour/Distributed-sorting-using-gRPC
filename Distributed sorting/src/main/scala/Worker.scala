@@ -3,7 +3,7 @@
 import java.time._
 import java.util.concurrent.TimeUnit
 import java.util.logging.{Level, Logger}
-import protoGreet.hello.{GreeterGrpc, GreeterRequest, ID, KeyRange, DummyText}
+import protoGreet.hello.{GreeterGrpc, GreeterRequest, ID, KeyRange, DummyText, PartitionedValues, Partition}
 import protoGreet.hello.GreeterGrpc.GreeterBlockingStub
 import io.grpc.{StatusRuntimeException, ManagedChannelBuilder, ManagedChannel}
 
@@ -24,7 +24,7 @@ object Worker {
     try {
       val user = "Bastian"
       client.greet(user)
-      client.sendKeyRange("abc", "def")
+      client.sendKeyRange("abc", "klm")
 
       while(!client.askIfDonePartitioning()) {
         Thread.sleep(1000)
@@ -43,20 +43,21 @@ class Worker private(
   private val blockingStub: GreeterBlockingStub
 ) {
   private[this] var id: Int = 0;
+  private[this] var myPartition: Partition = Partition("","")
+  private[this] var allPartitions: Seq[Partition] = Seq()
+  private[this] var noWorkers: Int = 0
   private[this] val logger = Logger.getLogger(classOf[Worker].getName)
 
   def shutdown(): Unit = {
     channel.shutdown.awaitTermination(5, TimeUnit.SECONDS)
   }
 
-  var id_ = 0;
-
   def greet(greeting: String): Unit = {
     logger.info("Will try to greet as " + greeting + " ...")
     val request = GreeterRequest(greeting = greeting)
     val response = blockingStub.assignID(request)
     logger.info("ID: " + response.id)
-    id_ = response.id;
+    id = response.id;
   }
 
   def sendKeyRange(min: String, max: String): Unit = {
@@ -82,7 +83,10 @@ class Worker private(
     logger.info("Asking for partitions")
     val request = DummyText(dummyText = "Can I get partitions plz? :)")
     val response = blockingStub.sendPartitionedValues(request)
-    logger.info("Seq: " + response.partitions + " id: " + response.id)
+    allPartitions = response.partitions
+    myPartition = allPartitions(id)
+    noWorkers = allPartitions.size
+    logger.info("Seq: " + response.partitions + " noWorkers: " + noWorkers)
   }
 }
 

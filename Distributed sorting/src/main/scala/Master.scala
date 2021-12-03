@@ -9,7 +9,7 @@ import io.grpc.{Server, ServerBuilder}
 import io.grpc.ServerInterceptors;
 import io.grpc.stub.StreamObserver;
 
-import protoGreet.hello.{GreeterGrpc, GreeterRequest, ID, KeyRange, DummyText, PartitionedValue, Partition}
+import protoGreet.hello.{GreeterGrpc, GreeterRequest, ID, KeyRange, DummyText, PartitionedValues, Partition}
 import scala.language.postfixOps
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -71,9 +71,10 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
   private class GreeterImpl extends GreeterGrpc.Greeter {
     
     override def assignID(req: GreeterRequest) = {
-      workerID += 1;
       val reply = ID(id = workerID)
+      workerID += 1;
       Future.successful(reply)
+      
     }
 
     override def determineKeyRange(req: KeyRange) = {
@@ -104,14 +105,14 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
       val minNum = globalMinKey.charAt(0).toInt
       val maxnum = globalMaxKey.charAt(0).toInt
 
-      val arr = new Array[String](noWorkers)
-      for( i <- 0 to arr.length - 1){
-         arr(i) = ((i+1) * (maxnum-minNum)/noWorkers + minNum).toChar.toString
-      }
+      val partitions = for{
+                         i <- 0 to noWorkers-1
+                         val min = (i * (maxnum-minNum)/noWorkers + minNum).toChar.toString
+                         val max = ((i+1) * (maxnum-minNum)/noWorkers + minNum).toChar.toString
+                       } yield (Partition(minVal = min, maxVal = max))
 
-      val reply = PartitionedValue(partitions = Seq(Partition(arr(0), arr(0))), 2)
+      val reply = PartitionedValues(partitions = partitions)
       Future.successful(reply)
-
     }
   }
 }
