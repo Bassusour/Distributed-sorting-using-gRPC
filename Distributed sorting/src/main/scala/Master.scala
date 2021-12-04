@@ -7,12 +7,15 @@ import io.grpc.{Server, ServerBuilder}
 import io.grpc.ServerInterceptors;
 import io.grpc.stub.StreamObserver;
 
-import protoDistrSorting.distrSort.{DistrSortingGrpc, ID, KeyRange, DummyText, PartitionedValues, Partition}
+import protoDistrSorting.distrSort.{DistrSortingGrpc, ID, KeyRange, DummyText, PartitionedValues, Partition, Dataset, Data}
 import scala.language.postfixOps
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
 import scala.concurrent.duration.Duration
+import java.io._
+// import scala.io.Source
+// import java.nio.file.{Paths, Files}
 
 // Companion object
 object Master {
@@ -107,6 +110,34 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
 
       val reply = PartitionedValues(partitions = partitions)
       Future.successful(reply)
+    }
+
+    override def getUnwantedData(req: Dataset) = {
+      
+      // val filename = "partitions/Partition"+req.partitionID+".txt" 
+      // val partition = new File(filename)
+
+      // if(partition.exists() == false){  //Files.exists(Paths.get(filename))
+      //   partition.createNewFile()
+      // } 
+
+      // FileWriter fileWriter = new FileWriter(partition, true)
+      // BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)
+
+      // for {
+      //   data <- req.data
+      // } yield (bufferedWriter.write(data.key + " " + data.value + "\n"))
+
+      // bufferedWriter.close();
+
+      // val printWriter = new PrintWriter(partition)
+
+      // for {
+      //   data <- req.data
+      // } yield (printWriter.write(data.key + " " + data.value + "\n"))
+      // printWriter.close()
+      
+      Future.successful(DummyText(dummyText = "Got unwanted data"))
     }
   }
 }

@@ -1,9 +1,10 @@
 import java.time._
 import java.util.concurrent.TimeUnit
 import java.util.logging.{Level, Logger}
-import protoDistrSorting.distrSort.{DistrSortingGrpc, ID, KeyRange, DummyText, PartitionedValues, Partition}
+import protoDistrSorting.distrSort.{DistrSortingGrpc, ID, KeyRange, DummyText, PartitionedValues, Partition, Dataset, Data}
 import protoDistrSorting.distrSort.DistrSortingGrpc.DistrSortingBlockingStub
 import io.grpc.{StatusRuntimeException, ManagedChannelBuilder, ManagedChannel}
+import scala.io.Source
 
 // Companion object
 object Worker {
@@ -20,14 +21,30 @@ object Worker {
   def main(args: Array[String]): Unit = {
     val client = Worker("localhost", 50051)
     try {
-      client.getID()
-      client.sendKeyRange("abc", "klm")
 
+      // Generate data here - Edwige
+
+      // Local sort here - Edwige
+
+      client.getID()
+
+      // Get min and max key here - Edwige
+
+      client.sendKeyRange("abc", "klm")
       while(!client.askIfDonePartitioning()) {
         Thread.sleep(1000)
       }
       
       client.getPartitions()
+
+      // Split keys into partitions here (and sort them) - Edwige
+
+      // Send unwanted data to master here - Bastian
+      client.sendUnwantedData("src/main/scala/testFile.txt")
+
+      // Receive wanted data from master here - Bastian
+
+      // Merge the data into one - Edwige
 
     } finally {
       client.shutdown()
@@ -84,17 +101,16 @@ class Worker private(
     noWorkers = allPartitions.size
     logger.info("Seq: " + response.partitions + " noWorkers: " + noWorkers)
   }
-}
 
-/*
-try {
-      // Server response
-      val response = blockingStub.assignID(request)
-      logger.info("ID: " + response.id)
-      id = response.id;
-    }
-    catch {
-      case e: StatusRuntimeException =>
-        logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus)
-    }
-    */
+  def sendUnwantedData(filename: String): Unit = {
+    val dataList = Source.fromFile(filename).getLines.toList
+    val dataSeq = for {
+                    dataLine <- dataList
+                    dataValues = dataLine.split(" ", 2)
+                  } yield (Data(key = dataValues(0), value = dataValues(1)))
+    val partitionID = 1 // filename takeRight 1
+    val request = Dataset(data = dataSeq, partitionID = partitionID)
+    val response = blockingStub.getUnwantedData(request)
+    print("asdasd")
+  }
+}

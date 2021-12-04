@@ -3,10 +3,11 @@ syntax = "proto3";
 package protoDistrSorting;
 
 service DistrSorting {
-  rpc determineKeyRange(KeyRange) returns (DummyText) {}
   rpc assignID(DummyText) returns (ID) {}
+  rpc determineKeyRange(KeyRange) returns (DummyText) {}
   rpc isDonePartitioning(DummyText) returns (DummyText) {}
   rpc sendPartitionedValues(DummyText) returns (PartitionedValues) {}
+  rpc getUnwantedData(Dataset) returns (DummyText) {}
 }
 
 message KeyRange {
@@ -29,4 +30,14 @@ message PartitionedValues {
 message Partition {
   string minVal = 1;
   string maxVal = 2;
+}
+
+message Dataset {
+  repeated Data data = 1;
+  int32 partitionID = 2;
+}
+
+message Data {
+  string key = 1;
+  string value = 2;
 }
