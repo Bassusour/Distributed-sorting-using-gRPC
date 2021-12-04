@@ -114,29 +114,20 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
 
     override def getUnwantedData(req: Dataset) = {
       
-      // val filename = "partitions/Partition"+req.partitionID+".txt" 
-      // val partition = new File(filename)
+      val filename = "partitions/Partition"+req.partitionID+".txt" 
+      val partition = new File(filename)
 
-      // if(partition.exists() == false){  //Files.exists(Paths.get(filename))
-      //   partition.createNewFile()
-      // } 
+      if(partition.exists() == false){  //Files.exists(Paths.get(filename))
+        partition.createNewFile()
+      } 
 
-      // FileWriter fileWriter = new FileWriter(partition, true)
-      // BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)
+      val printWriter: PrintWriter = new PrintWriter(new FileWriter(partition, true));
 
-      // for {
-      //   data <- req.data
-      // } yield (bufferedWriter.write(data.key + " " + data.value + "\n"))
+      for {
+        data <- req.data
+      } yield (out.append(data.key + " " + data.value + "\n"))
 
-      // bufferedWriter.close();
-
-      // val printWriter = new PrintWriter(partition)
-
-      // for {
-      //   data <- req.data
-      // } yield (printWriter.write(data.key + " " + data.value + "\n"))
-      // printWriter.close()
-      
+      printWriter.close();
       Future.successful(DummyText(dummyText = "Got unwanted data"))
     }
   }
