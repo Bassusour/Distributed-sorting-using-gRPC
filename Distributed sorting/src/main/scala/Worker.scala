@@ -39,10 +39,22 @@ object Worker {
 
       // Split keys into partitions here (and sort them) - Edwige
 
-      // Send unwanted data to master here - Bastian
-      client.sendUnwantedData("src/main/scala/testFile.txt")
+      // Sends single unwanted partition, and receives single wanted partition
+      // Until only wanted partitions are left
+      // while(client.sentPartitionsCounter != client.noWorkers-1) {
+        client.sendUnwantedPartition("src/main/scala/testFile2.txt") //"Partition"+client.sentPartitionsCounter+".txt"
 
-      // Receive wanted data from master here - Bastian
+        while(!client.askIfDoneReceivingPartitions) {
+          Thread.sleep(1000)
+        }
+        while(!client.askIfAllWorkersAreReady){
+          // All workers will be here at the same time
+          Thread.sleep(1000)
+        }
+        // Receive wanted partition from master here - Bastian
+        // client.getWantedPartition()
+
+      // }
 
       // Merge the data into one - Edwige
 
@@ -59,7 +71,8 @@ class Worker private(
   private[this] var id: Int = 0;
   private[this] var myPartition: Partition = Partition("","")
   private[this] var allPartitions: Seq[Partition] = Seq()
-  private[this] var noWorkers: Int = 0
+  private var noWorkers: Int = 0
+  private var sentPartitionsCounter = 0
   private[this] val logger = Logger.getLogger(classOf[Worker].getName)
 
   def shutdown(): Unit = {
@@ -102,7 +115,7 @@ class Worker private(
     logger.info("Seq: " + response.partitions + " noWorkers: " + noWorkers)
   }
 
-  def sendUnwantedData(filename: String): Unit = {
+  def sendUnwantedPartition(filename: String): Unit = {
     val dataList = Source.fromFile(filename).getLines.toList
     val dataSeq = for {
                     dataLine <- dataList
@@ -110,7 +123,37 @@ class Worker private(
                   } yield (Data(key = dataValues(0), value = dataValues(1)))
     val partitionID = 1 // filename takeRight 1
     val request = Dataset(data = dataSeq, partitionID = partitionID)
-    val response = blockingStub.getUnwantedData(request)
+    val response = blockingStub.getUnwantedPartitions(request)
+    sentPartitionsCounter += 1
     print("asdasd")
+  }
+
+  def getWantedPartition(): Unit = {
+    val request = ID(id = id)
+    val response = blockingStub.sendWantedPartitions(request)
+
+    
+  }
+
+  def askIfDoneReceivingPartitions(): Boolean = {
+    val request = DummyText(dummyText = "Are you done receiving partitions?")
+    val response = blockingStub.isDoneReceivingPartitions(request)
+    logger.info(response.dummyText)
+    if(response.dummyText == "Received all partitions") {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  def askIfAllWorkersAreReady(): Boolean = {
+    val request = DummyText(dummyText = "Have all workers received the go signal?")
+    val response = blockingStub.waitForAllWorkers(request)
+    logger.info(response.dummyText)
+    if(response.dummyText == "All workers received the go signal") {
+      return true
+    } else {
+      return false
+    }
   }
 }

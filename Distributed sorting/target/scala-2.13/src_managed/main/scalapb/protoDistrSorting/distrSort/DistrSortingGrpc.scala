@@ -41,14 +41,44 @@ object DistrSortingGrpc {
       .setSchemaDescriptor(_root_.scalapb.grpc.ConcreteProtoMethodDescriptorSupplier.fromMethodDescriptor(protoDistrSorting.distrSort.DistrSortProto.javaDescriptor.getServices().get(0).getMethods().get(3)))
       .build()
   
-  val METHOD_GET_UNWANTED_DATA: _root_.io.grpc.MethodDescriptor[protoDistrSorting.distrSort.Dataset, protoDistrSorting.distrSort.DummyText] =
+  val METHOD_GET_UNWANTED_PARTITIONS: _root_.io.grpc.MethodDescriptor[protoDistrSorting.distrSort.Dataset, protoDistrSorting.distrSort.DummyText] =
     _root_.io.grpc.MethodDescriptor.newBuilder()
       .setType(_root_.io.grpc.MethodDescriptor.MethodType.UNARY)
-      .setFullMethodName(_root_.io.grpc.MethodDescriptor.generateFullMethodName("protoDistrSorting.DistrSorting", "getUnwantedData"))
+      .setFullMethodName(_root_.io.grpc.MethodDescriptor.generateFullMethodName("protoDistrSorting.DistrSorting", "getUnwantedPartitions"))
       .setSampledToLocalTracing(true)
       .setRequestMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoDistrSorting.distrSort.Dataset])
       .setResponseMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoDistrSorting.distrSort.DummyText])
       .setSchemaDescriptor(_root_.scalapb.grpc.ConcreteProtoMethodDescriptorSupplier.fromMethodDescriptor(protoDistrSorting.distrSort.DistrSortProto.javaDescriptor.getServices().get(0).getMethods().get(4)))
+      .build()
+  
+  val METHOD_SEND_WANTED_PARTITIONS: _root_.io.grpc.MethodDescriptor[protoDistrSorting.distrSort.ID, protoDistrSorting.distrSort.Dataset] =
+    _root_.io.grpc.MethodDescriptor.newBuilder()
+      .setType(_root_.io.grpc.MethodDescriptor.MethodType.UNARY)
+      .setFullMethodName(_root_.io.grpc.MethodDescriptor.generateFullMethodName("protoDistrSorting.DistrSorting", "sendWantedPartitions"))
+      .setSampledToLocalTracing(true)
+      .setRequestMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoDistrSorting.distrSort.ID])
+      .setResponseMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoDistrSorting.distrSort.Dataset])
+      .setSchemaDescriptor(_root_.scalapb.grpc.ConcreteProtoMethodDescriptorSupplier.fromMethodDescriptor(protoDistrSorting.distrSort.DistrSortProto.javaDescriptor.getServices().get(0).getMethods().get(5)))
+      .build()
+  
+  val METHOD_RESET_PARTITION_COUNTER: _root_.io.grpc.MethodDescriptor[protoDistrSorting.distrSort.DummyText, protoDistrSorting.distrSort.DummyText] =
+    _root_.io.grpc.MethodDescriptor.newBuilder()
+      .setType(_root_.io.grpc.MethodDescriptor.MethodType.UNARY)
+      .setFullMethodName(_root_.io.grpc.MethodDescriptor.generateFullMethodName("protoDistrSorting.DistrSorting", "resetPartitionCounter"))
+      .setSampledToLocalTracing(true)
+      .setRequestMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoDistrSorting.distrSort.DummyText])
+      .setResponseMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoDistrSorting.distrSort.DummyText])
+      .setSchemaDescriptor(_root_.scalapb.grpc.ConcreteProtoMethodDescriptorSupplier.fromMethodDescriptor(protoDistrSorting.distrSort.DistrSortProto.javaDescriptor.getServices().get(0).getMethods().get(6)))
+      .build()
+  
+  val METHOD_IS_DONE_RECEIVING_PARTITIONS: _root_.io.grpc.MethodDescriptor[protoDistrSorting.distrSort.DummyText, protoDistrSorting.distrSort.DummyText] =
+    _root_.io.grpc.MethodDescriptor.newBuilder()
+      .setType(_root_.io.grpc.MethodDescriptor.MethodType.UNARY)
+      .setFullMethodName(_root_.io.grpc.MethodDescriptor.generateFullMethodName("protoDistrSorting.DistrSorting", "isDoneReceivingPartitions"))
+      .setSampledToLocalTracing(true)
+      .setRequestMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoDistrSorting.distrSort.DummyText])
+      .setResponseMarshaller(_root_.scalapb.grpc.Marshaller.forMessage[protoDistrSorting.distrSort.DummyText])
+      .setSchemaDescriptor(_root_.scalapb.grpc.ConcreteProtoMethodDescriptorSupplier.fromMethodDescriptor(protoDistrSorting.distrSort.DistrSortProto.javaDescriptor.getServices().get(0).getMethods().get(7)))
       .build()
   
   val SERVICE: _root_.io.grpc.ServiceDescriptor =
@@ -58,7 +88,10 @@ object DistrSortingGrpc {
       .addMethod(METHOD_DETERMINE_KEY_RANGE)
       .addMethod(METHOD_IS_DONE_PARTITIONING)
       .addMethod(METHOD_SEND_PARTITIONED_VALUES)
-      .addMethod(METHOD_GET_UNWANTED_DATA)
+      .addMethod(METHOD_GET_UNWANTED_PARTITIONS)
+      .addMethod(METHOD_SEND_WANTED_PARTITIONS)
+      .addMethod(METHOD_RESET_PARTITION_COUNTER)
+      .addMethod(METHOD_IS_DONE_RECEIVING_PARTITIONS)
       .build()
   
   trait DistrSorting extends _root_.scalapb.grpc.AbstractService {
@@ -67,7 +100,10 @@ object DistrSortingGrpc {
     def determineKeyRange(request: protoDistrSorting.distrSort.KeyRange): scala.concurrent.Future[protoDistrSorting.distrSort.DummyText]
     def isDonePartitioning(request: protoDistrSorting.distrSort.DummyText): scala.concurrent.Future[protoDistrSorting.distrSort.DummyText]
     def sendPartitionedValues(request: protoDistrSorting.distrSort.DummyText): scala.concurrent.Future[protoDistrSorting.distrSort.PartitionedValues]
-    def getUnwantedData(request: protoDistrSorting.distrSort.Dataset): scala.concurrent.Future[protoDistrSorting.distrSort.DummyText]
+    def getUnwantedPartitions(request: protoDistrSorting.distrSort.Dataset): scala.concurrent.Future[protoDistrSorting.distrSort.DummyText]
+    def sendWantedPartitions(request: protoDistrSorting.distrSort.ID): scala.concurrent.Future[protoDistrSorting.distrSort.Dataset]
+    def resetPartitionCounter(request: protoDistrSorting.distrSort.DummyText): scala.concurrent.Future[protoDistrSorting.distrSort.DummyText]
+    def isDoneReceivingPartitions(request: protoDistrSorting.distrSort.DummyText): scala.concurrent.Future[protoDistrSorting.distrSort.DummyText]
   }
   
   object DistrSorting extends _root_.scalapb.grpc.ServiceCompanion[DistrSorting] {
@@ -105,10 +141,31 @@ object DistrSortingGrpc {
               executionContext)
         }))
       .addMethod(
-        METHOD_GET_UNWANTED_DATA,
+        METHOD_GET_UNWANTED_PARTITIONS,
         _root_.io.grpc.stub.ServerCalls.asyncUnaryCall(new _root_.io.grpc.stub.ServerCalls.UnaryMethod[protoDistrSorting.distrSort.Dataset, protoDistrSorting.distrSort.DummyText] {
           override def invoke(request: protoDistrSorting.distrSort.Dataset, observer: _root_.io.grpc.stub.StreamObserver[protoDistrSorting.distrSort.DummyText]): Unit =
-            serviceImpl.getUnwantedData(request).onComplete(scalapb.grpc.Grpc.completeObserver(observer))(
+            serviceImpl.getUnwantedPartitions(request).onComplete(scalapb.grpc.Grpc.completeObserver(observer))(
+              executionContext)
+        }))
+      .addMethod(
+        METHOD_SEND_WANTED_PARTITIONS,
+        _root_.io.grpc.stub.ServerCalls.asyncUnaryCall(new _root_.io.grpc.stub.ServerCalls.UnaryMethod[protoDistrSorting.distrSort.ID, protoDistrSorting.distrSort.Dataset] {
+          override def invoke(request: protoDistrSorting.distrSort.ID, observer: _root_.io.grpc.stub.StreamObserver[protoDistrSorting.distrSort.Dataset]): Unit =
+            serviceImpl.sendWantedPartitions(request).onComplete(scalapb.grpc.Grpc.completeObserver(observer))(
+              executionContext)
+        }))
+      .addMethod(
+        METHOD_RESET_PARTITION_COUNTER,
+        _root_.io.grpc.stub.ServerCalls.asyncUnaryCall(new _root_.io.grpc.stub.ServerCalls.UnaryMethod[protoDistrSorting.distrSort.DummyText, protoDistrSorting.distrSort.DummyText] {
+          override def invoke(request: protoDistrSorting.distrSort.DummyText, observer: _root_.io.grpc.stub.StreamObserver[protoDistrSorting.distrSort.DummyText]): Unit =
+            serviceImpl.resetPartitionCounter(request).onComplete(scalapb.grpc.Grpc.completeObserver(observer))(
+              executionContext)
+        }))
+      .addMethod(
+        METHOD_IS_DONE_RECEIVING_PARTITIONS,
+        _root_.io.grpc.stub.ServerCalls.asyncUnaryCall(new _root_.io.grpc.stub.ServerCalls.UnaryMethod[protoDistrSorting.distrSort.DummyText, protoDistrSorting.distrSort.DummyText] {
+          override def invoke(request: protoDistrSorting.distrSort.DummyText, observer: _root_.io.grpc.stub.StreamObserver[protoDistrSorting.distrSort.DummyText]): Unit =
+            serviceImpl.isDoneReceivingPartitions(request).onComplete(scalapb.grpc.Grpc.completeObserver(observer))(
               executionContext)
         }))
       .build()
@@ -120,7 +177,10 @@ object DistrSortingGrpc {
     def determineKeyRange(request: protoDistrSorting.distrSort.KeyRange): protoDistrSorting.distrSort.DummyText
     def isDonePartitioning(request: protoDistrSorting.distrSort.DummyText): protoDistrSorting.distrSort.DummyText
     def sendPartitionedValues(request: protoDistrSorting.distrSort.DummyText): protoDistrSorting.distrSort.PartitionedValues
-    def getUnwantedData(request: protoDistrSorting.distrSort.Dataset): protoDistrSorting.distrSort.DummyText
+    def getUnwantedPartitions(request: protoDistrSorting.distrSort.Dataset): protoDistrSorting.distrSort.DummyText
+    def sendWantedPartitions(request: protoDistrSorting.distrSort.ID): protoDistrSorting.distrSort.Dataset
+    def resetPartitionCounter(request: protoDistrSorting.distrSort.DummyText): protoDistrSorting.distrSort.DummyText
+    def isDoneReceivingPartitions(request: protoDistrSorting.distrSort.DummyText): protoDistrSorting.distrSort.DummyText
   }
   
   class DistrSortingBlockingStub(channel: _root_.io.grpc.Channel, options: _root_.io.grpc.CallOptions = _root_.io.grpc.CallOptions.DEFAULT) extends _root_.io.grpc.stub.AbstractStub[DistrSortingBlockingStub](channel, options) with DistrSortingBlockingClient {
@@ -140,8 +200,20 @@ object DistrSortingGrpc {
       _root_.scalapb.grpc.ClientCalls.blockingUnaryCall(channel, METHOD_SEND_PARTITIONED_VALUES, options, request)
     }
     
-    override def getUnwantedData(request: protoDistrSorting.distrSort.Dataset): protoDistrSorting.distrSort.DummyText = {
-      _root_.scalapb.grpc.ClientCalls.blockingUnaryCall(channel, METHOD_GET_UNWANTED_DATA, options, request)
+    override def getUnwantedPartitions(request: protoDistrSorting.distrSort.Dataset): protoDistrSorting.distrSort.DummyText = {
+      _root_.scalapb.grpc.ClientCalls.blockingUnaryCall(channel, METHOD_GET_UNWANTED_PARTITIONS, options, request)
+    }
+    
+    override def sendWantedPartitions(request: protoDistrSorting.distrSort.ID): protoDistrSorting.distrSort.Dataset = {
+      _root_.scalapb.grpc.ClientCalls.blockingUnaryCall(channel, METHOD_SEND_WANTED_PARTITIONS, options, request)
+    }
+    
+    override def resetPartitionCounter(request: protoDistrSorting.distrSort.DummyText): protoDistrSorting.distrSort.DummyText = {
+      _root_.scalapb.grpc.ClientCalls.blockingUnaryCall(channel, METHOD_RESET_PARTITION_COUNTER, options, request)
+    }
+    
+    override def isDoneReceivingPartitions(request: protoDistrSorting.distrSort.DummyText): protoDistrSorting.distrSort.DummyText = {
+      _root_.scalapb.grpc.ClientCalls.blockingUnaryCall(channel, METHOD_IS_DONE_RECEIVING_PARTITIONS, options, request)
     }
     
     override def build(channel: _root_.io.grpc.Channel, options: _root_.io.grpc.CallOptions): DistrSortingBlockingStub = new DistrSortingBlockingStub(channel, options)
@@ -164,8 +236,20 @@ object DistrSortingGrpc {
       _root_.scalapb.grpc.ClientCalls.asyncUnaryCall(channel, METHOD_SEND_PARTITIONED_VALUES, options, request)
     }
     
-    override def getUnwantedData(request: protoDistrSorting.distrSort.Dataset): scala.concurrent.Future[protoDistrSorting.distrSort.DummyText] = {
-      _root_.scalapb.grpc.ClientCalls.asyncUnaryCall(channel, METHOD_GET_UNWANTED_DATA, options, request)
+    override def getUnwantedPartitions(request: protoDistrSorting.distrSort.Dataset): scala.concurrent.Future[protoDistrSorting.distrSort.DummyText] = {
+      _root_.scalapb.grpc.ClientCalls.asyncUnaryCall(channel, METHOD_GET_UNWANTED_PARTITIONS, options, request)
+    }
+    
+    override def sendWantedPartitions(request: protoDistrSorting.distrSort.ID): scala.concurrent.Future[protoDistrSorting.distrSort.Dataset] = {
+      _root_.scalapb.grpc.ClientCalls.asyncUnaryCall(channel, METHOD_SEND_WANTED_PARTITIONS, options, request)
+    }
+    
+    override def resetPartitionCounter(request: protoDistrSorting.distrSort.DummyText): scala.concurrent.Future[protoDistrSorting.distrSort.DummyText] = {
+      _root_.scalapb.grpc.ClientCalls.asyncUnaryCall(channel, METHOD_RESET_PARTITION_COUNTER, options, request)
+    }
+    
+    override def isDoneReceivingPartitions(request: protoDistrSorting.distrSort.DummyText): scala.concurrent.Future[protoDistrSorting.distrSort.DummyText] = {
+      _root_.scalapb.grpc.ClientCalls.asyncUnaryCall(channel, METHOD_IS_DONE_RECEIVING_PARTITIONS, options, request)
     }
     
     override def build(channel: _root_.io.grpc.Channel, options: _root_.io.grpc.CallOptions): DistrSortingStub = new DistrSortingStub(channel, options)

@@ -7,7 +7,11 @@ service DistrSorting {
   rpc determineKeyRange(KeyRange) returns (DummyText) {}
   rpc isDonePartitioning(DummyText) returns (DummyText) {}
   rpc sendPartitionedValues(DummyText) returns (PartitionedValues) {}
-  rpc getUnwantedData(Dataset) returns (DummyText) {}
+  rpc getUnwantedPartitions(Dataset) returns (DummyText) {}
+  rpc sendWantedPartitions(ID) returns (Dataset) {}
+  rpc resetPartitionCounter(DummyText) returns (DummyText) {}
+  rpc isDoneReceivingPartitions(DummyText) returns (DummyText) {}
+  
 }
 
 message KeyRange {
