@@ -134,12 +134,12 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
 
     override def sendWantedPartitions(req: ID) = {
       val filename = "partitions/partition"+req.id+".txt"
-      try {
-        val dataList = Source.fromFile(filename).getLines.toList
-      } catch {
-        // file doesn't exist
-        return Future.successful(Data())
-      }
+      // try {
+      val dataList = Source.fromFile(filename).getLines.toList
+      // } catch {
+      //   // file doesn't exist
+      //   return Future.successful(Data())
+      // }
 
       val dataSeq = for {
                       dataLine <- dataList
@@ -161,10 +161,11 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
     }
 
     override def waitForAllWorkers(rew: DummyText) = {
+      var reply = DummyText()
       if(replyCounter != noWorkers) {
-        val reply = DummyText(dummyText = "Still waiting for all workers to receive the go signal")
+        reply = reply.withDummyText("Still waiting for all workers to receive the signal")
       } else {
-        val reply = DummyText(dummyText = "All workers received the go signal")
+        reply = reply.withDummyText("All workers received the go signal")
         replyCounter = 0
         noReceivedPartitions = 0
       }
