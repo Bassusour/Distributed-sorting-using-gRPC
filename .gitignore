@@ -1,2 +1,12 @@
 .metals/
 .vscode/
+Distributed sorting/target/bg-jobs/
+Distributed sorting/target/global-logging/
+Distributed sorting/target/task-temp-directory/
+Distributed sorting/.bsp/
+Distributed sorting/project/target/active.json/
+Distributed sorting/target/.history3
+Distributed sorting/target/streams/
+Distributed sorting/target/scala-2.13/zinc
+Distributed sorting/target/scala-2.13/distributed-sorting_2.13-0.1.jar
+Distributed sorting/project/target/scala-2.12/sbt-1.0/update/update_cache_2.12/output
