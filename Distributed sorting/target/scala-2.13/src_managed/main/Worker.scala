@@ -23,14 +23,19 @@ object Worker {
     try {
 
       // Generate data here - Edwige
+      val toSort = new sorting()
+      toSort.generateData("data" + client.getID())
 
       // Local sort here - Edwige
+      var locallySorted = toSort.toList
+      locallySorted = locallySorted.sorted
 
       client.getID()
 
       // Get min and max key here - Edwige
-
-      client.sendKeyRange("abc", "klm")
+      val min = locallySorted.head
+      val max = locallySorted.last
+      client.sendKeyRange(min, max)
       while(!client.askIfDonePartitioning()) {
         Thread.sleep(1000)
       }
@@ -38,6 +43,7 @@ object Worker {
       client.getPartitions()
 
       // Split keys into partitions here (and sort them) - Edwige
+      val ranges = toSort.defineRanges(min, max, 2)
 
       // Sends single unwanted partition, and receives single wanted partition
       // Until only wanted partitions are left
