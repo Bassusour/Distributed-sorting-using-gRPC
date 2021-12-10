@@ -29,19 +29,25 @@ object Worker {
     var sentPartitionsCounter = 0
     try {
       // Generate data here - Edwige
+      val sorting = new sorting()
+      sorting.generateData("data" + client.getID())
 
       // Local sort here - Edwige
+      var locallySorted = sorting.toList
+      locallySorted = locallySorted.sorted
 
       client.getID()
 
       // Get min and max key here - Edwige
-
-      client.sendKeyRange("abc", "klm")
+      val min = locallySorted.head
+      val max = locallySorted.last
+      client.sendKeyRange(min, max)
       while(!client.askIfDonePartitioning()) {
         Thread.sleep(1000)
       }
       
       client.getPartitions()
+
 
       while(sentPartitionsCounter < client.noWorkers) {
         if(sentPartitionsCounter != client.id){
@@ -52,6 +58,10 @@ object Worker {
       } 
 
       // Split keys into partitions here (and sort them) - Edwige
+      val partitionedList = sorting.separatePartition(client.allPartitions, locallySorted)
+      for(part <- 0 to client.allPartitions.length-1) {
+        sorting.writeInFile(client.allPartitions.apply(part), part)
+      }
 
       // Sends single unwanted partition, and receives single wanted partition
       // Until only wanted partitions are left
@@ -89,7 +99,7 @@ class Worker private(
 ) {
   var id: Int = 0;
   var myPartition: Partition = Partition("","")
-  private[this] var allPartitions: Seq[Partition] = Seq()
+  private var allPartitions: Seq[Partition] = Seq()
   private var noWorkers: Int = 0
   // private var sentPartitionsCounter = 0
   private[this] val logger = Logger.getLogger(classOf[Worker].getName)

@@ -1,11 +1,12 @@
+import java.io.{BufferedWriter, File, FileWriter}
 import scala.io.Source
 import scala.language.postfixOps
 import scala.sys.process._
 
 class sorting {
 
-  def generateData(): Unit = {
-    "gensort -a 10 data" !!
+  def generateData(fileName : String): Unit = {
+    "gensort -a 10 " + fileName !!
   }
 
   def isBefore(stringCurrent: String, stringUpper: String, ind: Int): Boolean = ind match{
@@ -29,11 +30,33 @@ class sorting {
   }
 
   def toList: List[String] = {
-    Source.fromFile("data").getLines.toList
+    val list = Source.fromFile("data").getLines.toList
+    Source.fromFile("data").close
+    println(new File(".\\data").delete())
+    list
   }
 
   def partition (list: List[String], beginning: String, end: String ): List[String] = {
     list.filter(inRange(_, beginning, end))
+  }
+
+  def separatePartition(allPartitions : Seq[String], notPartitioned : List[String]) : Seq[List[String]] = {
+    var separatedList: Seq[List[String]] = Seq()
+    for(i <- 0 to allPartitions.length-2) {
+      println(this.partition(notPartitioned, allPartitions.apply(i), allPartitions.apply(i+1)))
+      val partition = this.partition(notPartitioned, allPartitions.apply(i), allPartitions.apply(i+1))
+      separatedList = separatedList:+ partition
+    }
+    separatedList
+  }
+
+  def writeInFile(keys : List[String], range : Int) : Unit ={
+    val file = "range" + range
+    val bw = new BufferedWriter(new FileWriter(file))
+    for (line <- keys) {
+      bw.write(line + "\n")
+    }
+    bw.close()
   }
 
   def defineRanges(min: String, max: String, numberSlaves: Int): List[String] = {
@@ -65,12 +88,10 @@ class sorting {
 
 object Main extends App {
   val sort = new sorting()
-  sort.generateData()
+  sort.generateData("data")
   var toSort = sort.toList
   toSort = toSort.sorted
   println(toSort)
-  val ranges = sort.defineRanges(toSort.head, toSort.last, 2)
-  println(ranges.head)
-  println(sort.partition(toSort, toSort.head,ranges.head))
-  println(sort.partition(toSort,ranges.head, toSort.last))
+  val ranges = Seq("!!!!!!!!!!", "T~:]~M?eKB", "~~~~~~~~~~")
+  println(sort.separatePartition(ranges, toSort))
 }
