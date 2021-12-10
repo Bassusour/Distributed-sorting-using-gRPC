@@ -7,3 +7,5 @@ Distributed sorting/.bsp/
 Distributed sorting/grpc-scala/
 Distributed sorting/project/
 Distributed sorting/target/
+Distributed sorting/clientFiles/
+Distributed sorting/serverPartitions/

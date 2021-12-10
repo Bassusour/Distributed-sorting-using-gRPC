@@ -1,10 +1,16 @@
+package distrSortTest
+
 import java.time._
 import java.util.concurrent.TimeUnit
 import java.util.logging.{Level, Logger}
-import protoDistrSorting.distrSort.{DistrSortingGrpc, ID, KeyRange, DummyText, PartitionedValues, Partition, Dataset, Data}
+import protoDistrSorting.distrSort.{DistrSortingGrpc, ID, KeyRange, DummyText, PartitionedValues, Partition, Dataset, Data, ConnectionInformation}
 import protoDistrSorting.distrSort.DistrSortingGrpc.DistrSortingBlockingStub
 import io.grpc.{StatusRuntimeException, ManagedChannelBuilder, ManagedChannel}
 import scala.io.Source
+import java.io._
+import scala.concurrent.{Await, ExecutionContext, Future, Promise}
+import scala.concurrent.duration.Duration
+import ExecutionContext.Implicits.global
 
 // Companion object
 object Worker {
@@ -15,13 +21,13 @@ object Worker {
     
     println(channel);
     println(blockingStub);
-    new Worker(channel, blockingStub)
+    new Worker(channel, blockingStub, host, port)
   }
 
   def main(args: Array[String]): Unit = {
     val client = Worker("localhost", 50051)
+    var sentPartitionsCounter = 0
     try {
-
       // Generate data here - Edwige
 
       // Local sort here - Edwige
@@ -37,26 +43,37 @@ object Worker {
       
       client.getPartitions()
 
+      while(sentPartitionsCounter < client.noWorkers) {
+        if(sentPartitionsCounter != client.id){
+          client.sendUnwantedPartition("src/main/scala/testFile."+sentPartitionsCounter.toString) //"partition."+client.sentPartitionsCounter
+          sentPartitionsCounter = sentPartitionsCounter+1
+        }
+        client.getWantedPartition()
+      } 
+
       // Split keys into partitions here (and sort them) - Edwige
 
       // Sends single unwanted partition, and receives single wanted partition
       // Until only wanted partitions are left
-      // while(client.sentPartitionsCounter != client.noWorkers-1) {
-        client.sendUnwantedPartition("src/main/scala/testFile2.txt") //"Partition"+client.sentPartitionsCounter+".txt"
+      // while(sentPartitionsCounter < client.noWorkers) {
+      //   // if(client.sentPartitionsCounter != client.id){
+      //     // println(client.sentPartitionsC)
+      //   client.sendUnwantedPartition("src/main/scala/testFile."+sentPartitionsCounter.toString) //"partition."+client.sentPartitionsCounter
+      //   sentPartitionsCounter = sentPartitionsCounter+1
+      //   // }
+      //   while(!client.askIfDoneReceivingPartitions) {
+      //     Thread.sleep(500)
+      //   }
+      //   Thread.sleep(500)
+      //   while(!client.askIfAllWorkersAreReady){
+      //     // All workers will be here at the same time
+      //     Thread.sleep(500)
+      //   }
 
-        while(!client.askIfDoneReceivingPartitions) {
-          Thread.sleep(1000)
-        }
-        while(!client.askIfAllWorkersAreReady){
-          // All workers will be here at the same time
-          Thread.sleep(1000)
-        }
-        // Receive wanted partition from master here - Bastian
-        // client.getWantedPartition()
-
+      //   Thread.sleep(1000)
+      //   client.getWantedPartition()
+      //   client.resetCounter
       // }
-
-      // Merge the data into one - Edwige
 
     } finally {
       client.shutdown()
@@ -66,13 +83,15 @@ object Worker {
 
 class Worker private(
   private val channel: ManagedChannel,
-  private val blockingStub: DistrSortingBlockingStub
+  private val blockingStub: DistrSortingBlockingStub,
+  private val host: String,
+  private val port: Int
 ) {
-  private[this] var id: Int = 0;
-  private[this] var myPartition: Partition = Partition("","")
+  var id: Int = 0;
+  var myPartition: Partition = Partition("","")
   private[this] var allPartitions: Seq[Partition] = Seq()
   private var noWorkers: Int = 0
-  private var sentPartitionsCounter = 0
+  // private var sentPartitionsCounter = 0
   private[this] val logger = Logger.getLogger(classOf[Worker].getName)
 
   def shutdown(): Unit = {
@@ -80,7 +99,7 @@ class Worker private(
   }
 
   def getID(): Unit = {
-    val request = DummyText(dummyText = "heyo")
+    val request = ConnectionInformation(host = host, port = port)
     val response = blockingStub.assignID(request)
     logger.info("ID: " + response.id)
     id = response.id;
@@ -94,7 +113,6 @@ class Worker private(
   }
 
   def askIfDonePartitioning(): Boolean = {
-    logger.info("Sending key range ...")
     val request = DummyText(dummyText = "Are you done partitioning?")
     val response = blockingStub.isDonePartitioning(request)
     logger.info(response.dummyText)
@@ -121,18 +139,27 @@ class Worker private(
                     dataLine <- dataList
                     dataValues = dataLine.split(" ", 2)
                   } yield (Data(key = dataValues(0), value = dataValues(1)))
-    val partitionID = 1 // filename takeRight 1
-    val request = Dataset(data = dataSeq, partitionID = partitionID)
+    val partitionID = filename takeRight 1 // filename takeRight 1
+    val request = Dataset(data = dataSeq, partitionID = partitionID.toInt)
     val response = blockingStub.getUnwantedPartitions(request)
-    sentPartitionsCounter += 1
     print("asdasd")
   }
 
   def getWantedPartition(): Unit = {
     val request = ID(id = id)
     val response = blockingStub.sendWantedPartitions(request)
+    val wantedPartitions = new File("clientFiles/wantedPartitions"+id.toString+".txt")
+    val printWriter: PrintWriter = new PrintWriter(new FileWriter(wantedPartitions, true));
 
+    if(!wantedPartitions.exists()){  //Files.exists(Paths.get(filename))
+      wantedPartitions.createNewFile()
+    } 
+
+    for {
+      data <- response.data
+    } yield (printWriter.append(data.key + " " + data.value + "\n"))
     
+    printWriter.close();
   }
 
   def askIfDoneReceivingPartitions(): Boolean = {
@@ -142,7 +169,7 @@ class Worker private(
     if(response.dummyText == "Received all partitions") {
       return true
     } else {
-      return false
+      return askIfDoneReceivingPartitions()
     }
   }
 
@@ -153,7 +180,12 @@ class Worker private(
     if(response.dummyText == "All workers received the go signal") {
       return true
     } else {
-      return false
+      return askIfAllWorkersAreReady()
     }
+  }
+
+  def resetCounter() = {
+    val request = DummyText(dummyText = "Reset counters")
+    val response = blockingStub.resetCounters(request) 
   }
 }
