@@ -54,6 +54,14 @@ class sorting {
     separatedList
   }
 
+  def getLocalKeys(partitionNumber : Int, noWorkers : Int) : List[String] = {
+    var keys : List[String] = List()
+    for(workerNumber <- 0 until noWorkers) {
+      keys = "partition" + workerNumber + "." + partitionNumber :: keys
+    }
+    this.getData(keys)
+  }
+
   def writeInFile(keys : List[String], fileName : String) : Unit ={
     val bw = new BufferedWriter(new FileWriter(fileName))
     for (line <- keys) {
@@ -61,14 +69,4 @@ class sorting {
     }
     bw.close()
   }
-}
-
-object Main extends App {
-  val sort = new sorting()
-  /*sort.generateData("data")
-  var toSort = sort.toList
-  toSort = toSort.sorted
-  println(toSort)
-  val ranges = Seq("!!!!!!!!!!", "T~:]~M?eKB", "~~~~~~~~~~")
-  println(sort.separatePartition(ranges, toSort))*/
 }

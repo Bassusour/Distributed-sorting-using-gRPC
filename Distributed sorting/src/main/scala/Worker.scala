@@ -108,6 +108,10 @@ object Worker {
       //   client.resetCounter
       // }
 
+      // sort local partitions - Edwige
+      val localPartition = sort.getLocalKeys(client.id, client.noWorkers)
+      sorting.writeInFile(localPartition.sorted, outputDirectory + "/partition" + client.id)
+
     } finally {
       client.shutdown()
     }
