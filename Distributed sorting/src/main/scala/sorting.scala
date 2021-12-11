@@ -9,20 +9,18 @@ class sorting {
     "gensort -a 10 " + fileName !!
   }
 
-  def isBefore(stringCurrent: String, stringUpper: String, ind: Int): Boolean = ind match{
-    case 0 => false
-    case _ =>
-      if(stringCurrent.head <= stringUpper.head) true
-      else if(stringCurrent.head > stringUpper.head) false
-      else isBefore(stringCurrent.tail, stringUpper. tail, ind-1)
+  def isBefore(stringCurrent: String, stringUpper: String, length : Int): Boolean = {
+    if(stringCurrent.head < stringUpper.head) true
+    else if(stringCurrent.head > stringUpper.head) false
+    else if(length == 1) true
+    else isBefore(stringCurrent.tail, stringUpper.tail, length -1)
   }
 
-  def isAfter(stringCurrent: String, stringLower: String, ind: Int): Boolean = ind match{
-    case 0 => false
-    case _ =>
-      if(stringCurrent.head > stringLower.head) true
-      else if(stringCurrent.head < stringLower.head) false
-      else isBefore(stringCurrent.tail, stringLower. tail, ind-1)
+  def isAfter(stringCurrent: String, stringLower: String, length : Int): Boolean = {
+    if(stringCurrent.head > stringLower.head) true
+    else if(stringCurrent.head < stringLower.head) false
+    else if(length == 1) false
+    else isAfter(stringCurrent.tail, stringLower. tail, length -1)
   }
 
   def inRange(stringCurrent: String, stringLower: String, stringUpper: String): Boolean = {
@@ -40,11 +38,10 @@ class sorting {
     list.filter(inRange(_, beginning, end))
   }
 
-  def separatePartition(allPartitions : Seq[String], notPartitioned : List[String]) : Seq[List[String]] = {
+  def separatePartition(allPartitions : Seq[Partition], notPartitioned : List[String]) : Seq[List[String]] = {
     var separatedList: Seq[List[String]] = Seq()
     for(i <- 0 to allPartitions.length-2) {
-      println(this.partition(notPartitioned, allPartitions.apply(i), allPartitions.apply(i+1)))
-      val partition = this.partition(notPartitioned, allPartitions.apply(i), allPartitions.apply(i+1))
+      val partition = this.partition(notPartitioned, allPartitions.apply(i).val, allPartitions.apply(i+1).val)
       separatedList = separatedList:+ partition
     }
     separatedList
@@ -59,7 +56,7 @@ class sorting {
     bw.close()
   }
 
-  def defineRanges(min: String, max: String, numberSlaves: Int): List[String] = {
+  def defineRanges(min: String, max: String, numberSlaves: Int): Seq[String] = {
     val minChar = min.toCharArray
     val maxChar = max.toCharArray
     val minInt = new Array[Int](10)
@@ -88,10 +85,12 @@ class sorting {
 
 object Main extends App {
   val sort = new sorting()
-  sort.generateData("data")
+  /*sort.generateData("data")
   var toSort = sort.toList
   toSort = toSort.sorted
   println(toSort)
   val ranges = Seq("!!!!!!!!!!", "T~:]~M?eKB", "~~~~~~~~~~")
-  println(sort.separatePartition(ranges, toSort))
+  println(sort.separatePartition(ranges, toSort))*/
+
+  println(sort.defineRanges(""))
 }
