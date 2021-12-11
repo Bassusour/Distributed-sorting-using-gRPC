@@ -1,0 +1,11 @@
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(run 2, Some(c55448a7-e98b-4712-82a6-e04623906b46), Some(CommandSource(console0)))[0m
+[0m[[0m[0mdebug[0m] [0m[0mEvaluating tasks: Compile / run[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning task... Cancel: Signal, check cycles: false, forcegc: true[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 1 Scala source to /home/bastian_preisel/gitProjects/cs434_project/Distributed sorting/target/scala-2.13/classes ...[0m
+[0m[[0m[31merror[0m] [0m[0m/home/bastian_preisel/gitProjects/cs434_project/Distributed sorting/src/main/scala/Worker.scala:136:68: not found: value str[0m
+[0m[[0m[31merror[0m] [0m[0m    val wantedPartitions = new File("clientFiles/wantedPartitions"+str(id)+".txt")[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0m(Compile / [31mcompileIncremental[0m) Compilation failed[0m
+[0m[[0m[31merror[0m] [0m[0mTotal time: 3 s, completed Dec 9, 2021, 2:09:14 PM[0m
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m
