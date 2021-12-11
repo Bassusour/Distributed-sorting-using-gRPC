@@ -1,12 +1,20 @@
+package distrSortTest
 import java.io.{BufferedWriter, File, FileWriter}
 import scala.io.Source
 import scala.language.postfixOps
 import scala.sys.process._
 
 class sorting {
+  def generateData(fileName : String, numberKeys : Int): Unit = {
+    "gensort -a " + numberKeys + " " + fileName !!
+  }
 
-  def generateData(fileName : String): Unit = {
-    "gensort -a 10 " + fileName !!
+  def getData(inputDirectories : List[String]) : List[String] = {
+    var keys : List[String] = List()
+    inputDirectories.foreach( directory => {
+      keys = keys ::: this.toList(directory)
+    })
+    keys
   }
 
   def isBefore(stringCurrent: String, stringUpper: String, length : Int): Boolean = {
@@ -27,10 +35,9 @@ class sorting {
     isBefore(stringCurrent, stringUpper, 10) && isAfter(stringCurrent, stringLower, 10)
   }
 
-  def toList: List[String] = {
-    val list = Source.fromFile("data").getLines.toList
-    Source.fromFile("data").close
-    println(new File(".\\data").delete())
+  def toList(fileName : String) : List[String] = {
+    val list = Source.fromFile(fileName).getLines.toList
+    Source.fromFile(fileName).close
     list
   }
 
@@ -47,9 +54,8 @@ class sorting {
     separatedList
   }
 
-  def writeInFile(keys : List[String], range : Int) : Unit ={
-    val file = "range" + range
-    val bw = new BufferedWriter(new FileWriter(file))
+  def writeInFile(keys : List[String], fileName : String) : Unit ={
+    val bw = new BufferedWriter(new FileWriter(fileName))
     for (line <- keys) {
       bw.write(line + "\n")
     }

@@ -25,15 +25,36 @@ object Worker {
   }
 
   def main(args: Array[String]): Unit = {
+    val masterIP = args(0)
+    var inputDirectories: List[String] = List()
+    var outputDirectory = ""
+    var numberKeys = 0
+    var withGeneratedFiles = 0
+    if(args(1) == "-I"){
+      withGeneratedFiles = 1
+      var indice = 2
+      while (args(indice) != "-O"){
+        inputDirectories = args(indice) :: inputDirectories
+        indice = indice + 1
+      }
+      outputDirectory = args(indice +1)
+    }
+    else if(args(1) == "-N") numberKeys = args(2)
+
     val client = Worker("localhost", 50051)
     var sentPartitionsCounter = 0
     try {
       // Generate data here - Edwige
       val sorting = new sorting()
-      sorting.generateData("data" + client.getID())
+      var locallySorted : List[String] = List()
+      if(withGeneratedFiles == 0){
+        sorting.generateData("data" + client.getID(), numberKeys)
+        locallySorted = sorting.toList("data")
+      }
+      else locallySorted = sorting.getData(inputDirectories)
+
 
       // Local sort here - Edwige
-      var locallySorted = sorting.toList
       locallySorted = locallySorted.sorted
 
       client.getID()
@@ -59,8 +80,10 @@ object Worker {
 
       // Split keys into partitions here (and sort them) - Edwige
       val partitionedList = sorting.separatePartition(client.allPartitions, locallySorted)
-      for(part <- 0 to client.allPartitions.length-1) {
-        sorting.writeInFile(client.allPartitions.apply(part), part)
+      var indice = 0
+      for(part <- partitionedList){
+        sorting.writeInFile(part, outputDirectory + "/partition" + client.id + "." + indice)
+        indice = indice +1
       }
 
       // Sends single unwanted partition, and receives single wanted partition
