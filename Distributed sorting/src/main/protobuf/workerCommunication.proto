@@ -5,20 +5,5 @@ package protoDistrSorting;
 import "distrSort.proto";
 
 service WorkerConnections {
-  rpc getUnwantedPartitions(Dataset) returns (DummyText) {}
+  rpc getWantedPartitions(Dataset) returns (DummyText) {}
 }
-
-
-// message DummyText {
-//   string dummyText = 1;
-// }
-
-// message Dataset {
-//   repeated Data data = 1;
-//   int32 partitionID = 2;
-// }
-
-// message Data {
-//   string key = 1;
-//   string value = 2;
-// }

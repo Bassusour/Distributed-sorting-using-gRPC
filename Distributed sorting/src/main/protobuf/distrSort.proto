@@ -9,17 +9,7 @@ service DistrSorting {
   rpc determineKeyRange(KeyRange) returns (DummyText) {}
   rpc isDonePartitioning(DummyText) returns (DummyText) {}
   rpc sendPartitionedValues(DummyText) returns (PartitionedValues) {}
-  // rpc getUnwantedPartitions(Dataset) returns (DummyText) {}
-  // rpc sendWantedPartitions(ID) returns (Dataset) {}
-  // rpc waitForAllWorkers(DummyText) returns (DummyText) {}
-  // rpc isDoneReceivingPartitions(DummyText) returns (DummyText) {}
-  // rpc resetCounters(DummyText) returns (DummyText) {}
 }
-
-// service WorkerConnections {
-//   rpc getUnwantedPartitions(Dataset) returns (DummyText) {}
-// }
-
 
 message KeyRange {
   string minKey = 1;
@@ -56,6 +46,7 @@ message Partition {
 message Dataset {
   repeated Data data = 1;
   int32 partitionID = 2;
+  int32 fromUserID = 3;
 }
 
 message Data {

@@ -26,7 +26,6 @@ object Master {
     val noWorkers = args(0).toInt
     val server = new Master(ExecutionContext.global, noWorkers)
     server.start()
-    // println(server.getAddress)
     server.blockUntilShutdown()
   }
 
@@ -47,7 +46,6 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
   def start(): Unit = {
     server = ServerBuilder.forPort(Master.port)
                 .addService(DistrSortingGrpc.bindService(new DistrSortingImpl, executionContext))
-                // .intercept(new IPInterceptor())
                 .build.start
     Master.logger.info("127.0.0.1:50051")
     sys.addShutdownHook {
@@ -105,7 +103,7 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
       noOfReceivedKeyRanges += 1
       val reply = DummyText(dummyText = "Received key range")
       Future.successful(reply)
-      }
+    }
 
     override def isDonePartitioning(req: DummyText) = {
       if(noOfReceivedKeyRanges != noWorkers) {
@@ -150,119 +148,5 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
       val reply = PartitionedValues(Seq(Partition("a","b")))
       Future.successful(reply)
     }
-
-    // override def getUnwantedPartitions(req: Dataset) = {
-    //   saves data according to the id
-    //   Future.successful(Text("Got unwanted data"))
-    // }
-
-    // override def sendWantedPartitions(req: ID) = {
-    //   wantedData = getData(req.id)
-    //   Future.successful(Data(wantedData))
-    // }
-
-    // override def getUnwantedPartitions(req: Dataset) = {
-    //   val filename = "serverPartitions/partition"+req.partitionID+".txt"
-    //   val partition = new File(filename)
-    //   val printWriter: PrintWriter = new PrintWriter(new FileWriter(partition, true));
-
-    //   if(!partition.exists()){
-    //     partition.createNewFile()
-    //   }
-
-    //   for {
-    //     data <- req.data
-    //   } yield (printWriter.append(data.key + " " + data.value + "\n"))
-
-    //   printWriter.close();
-    //   Future.successful(Text("Got unwanted data"))
-    // }
-
-    // override def sendWantedPartitions(req: ID) = {
-    //   val filename = "serverPartitions/partition"+req.id+".txt"
-    //   try {
-    //     val dataList = Source.fromFile(filename).getLines.toList
-    //     val dataSeq = for {
-    //                     dataLine <- dataList
-    //                     dataValues = dataLine.split(" ", 2)
-    //                   } yield (Data(key = dataValues(0), value = dataValues(1)))
-    //     val reply = Dataset(data = dataSeq, partitionID = req.id)
-    //     new File(filename).delete()
-    //     Future.successful(reply)
-    //   } catch {
-    //     // Partition doesn't exist
-    //     case e: FileNotFoundException => Future.successful(Dataset())
-    //   }
-    // }
-
-    // override def getUnwantedPartitions(req: Dataset) = {
-    //   val filename = "serverPartitions/partition"+req.partitionID+".txt" 
-    //   val partition = new File(filename)
-
-    //   if(!partition.exists()){  //Files.exists(Paths.get(filename))
-    //     partition.createNewFile()
-    //   } 
-
-    //   val printWriter: PrintWriter = new PrintWriter(new FileWriter(partition, true));
-
-    //   for {
-    //     data <- req.data
-    //   } yield (printWriter.append(data.key + " " + data.value + "\n"))
-
-    //   printWriter.close();
-    //   noReceivedPartitions = noReceivedPartitions+1
-    //   Future.successful(DummyText(dummyText = "Got unwanted data"))
-    // }
-
-    // override def sendWantedPartitions(req: ID) = {
-    //   val filename = "serverPartitions/partition"+req.id+".txt"
-    //   try {
-    //     val dataList = Source.fromFile(filename).getLines.toList
-
-    //     val dataSeq = for {
-    //                     dataLine <- dataList
-    //                     dataValues = dataLine.split(" ", 2)
-    //                   } yield (Data(key = dataValues(0), value = dataValues(1)))
-    //     val reply = Dataset(data = dataSeq, partitionID = req.id)
-    //     new File(filename).delete()
-    //     Future.successful(reply)
-    //   } catch {
-    //     // Partition doesn't exist
-    //     case e: FileNotFoundException => Future.successful(Dataset())
-    //   }
-    // }
-
-    // override def isDoneReceivingPartitions(req: DummyText) = {
-    //   if(noReceivedPartitions != noWorkers-1) {
-    //     val reply = DummyText(dummyText = "Still waiting for more partitions")
-    //     Future.successful(reply)
-    //   } else {
-    //     val reply = DummyText(dummyText = "Received all partitions")
-    //     replyCounter += 1
-    //     Future.successful(reply)
-    //   }
-    // }
-
-    // override def waitForAllWorkers(req: DummyText) = {
-    //   var reply = DummyText()
-    //   if(replyCounter != noWorkers) {
-    //     reply = reply.withDummyText("Still waiting for all workers to receive the signal")
-    //   } else {
-    //     reply = reply.withDummyText("All workers received the go signal")
-    //     // replyCounter = 0
-    //     // noReceivedPartitions = 0
-    //     shouldReset = true
-    //   }
-    //   Future.successful(reply)
-    // }
-
-    // override def resetCounters(req: DummyText) = {
-    //   if(shouldReset){
-    //     replyCounter = 0
-    //     noReceivedPartitions = 0
-    //   }
-    //   shouldReset = false
-    //   Future.successful(DummyText("Reset counters"))
-    // }
   }
 }
