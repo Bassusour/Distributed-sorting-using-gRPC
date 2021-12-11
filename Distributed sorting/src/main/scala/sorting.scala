@@ -1,3 +1,5 @@
+package distrSortTest
+
 import java.io.{BufferedWriter, File, FileWriter}
 import scala.io.Source
 import scala.language.postfixOps
@@ -6,7 +8,7 @@ import scala.sys.process._
 class sorting {
 
   def generateData(fileName : String): Unit = {
-    "gensort -a 10 " + fileName !!
+    "./gensort -a 10 " + fileName !!
   }
 
   def isBefore(stringCurrent: String, stringUpper: String, ind: Int): Boolean = ind match{
