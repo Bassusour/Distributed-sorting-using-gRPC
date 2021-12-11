@@ -101,14 +101,41 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
     }
 
     override def sendPartitionedValues(req: DummyText) = {
-      val minNum = globalMinKey.charAt(0).toInt
-      val maxnum = globalMaxKey.charAt(0).toInt
+      def defineRanges(min: String, max: String, numberSlaves: Int): List[Partition] = {
+        val minChar = min.toCharArray
+        val maxChar = max.toCharArray
+        val minInt = new Array[Int](10)
+        val maxInt = new Array[Int](10)
+        val interval = new Array[Int](10)
 
+        for (ind <- 0 to 9){
+          minInt(ind) = minChar(ind).toInt
+          maxInt(ind) = maxChar(ind).toInt
+          interval(ind) = (maxInt(ind) - minInt(ind)).abs / numberSlaves
+        }
+
+        var ranges: List[String] = List(Partition(min))
+        for (indRange <- 1 until numberSlaves){
+          var string = ""
+          for (indChar <- List(0,1,2,3,4,5,6,7,8,9)) {
+            var char = (minInt(indChar) + indRange*interval(indChar)).toChar
+            if (char > 126) char = 126
+            string = string + char
+          }
+          ranges = Partition(string) :: ranges
+        }
+        (Partition(max) :: ranges).sorted
+      }
+
+      var partitions = defineRanges(globalMinKey, globalMaxKey, noWorkers)
+
+      /*val minNum = globalMinKey.charAt(0).toInt
+      val maxnum = globalMaxKey.charAt(0).toInt
       val partitions = for{
                          i <- 0 to noWorkers-1
                          val min = (i * (maxnum-minNum)/noWorkers + minNum).toChar.toString
                          val max = ((i+1) * (maxnum-minNum)/noWorkers + minNum).toChar.toString
-                       } yield (Partition(minVal = min, maxVal = max))
+                       } yield (Partition(minVal = min, maxVal = max))*/
 
       val reply = PartitionedValues(partitions = partitions)
       Future.successful(reply)
@@ -125,13 +152,13 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
     // }
 
     // override def getUnwantedPartitions(req: Dataset) = {
-    //   val filename = "serverPartitions/partition"+req.partitionID+".txt" 
+    //   val filename = "serverPartitions/partition"+req.partitionID+".txt"
     //   val partition = new File(filename)
     //   val printWriter: PrintWriter = new PrintWriter(new FileWriter(partition, true));
 
-    //   if(!partition.exists()){ 
+    //   if(!partition.exists()){
     //     partition.createNewFile()
-    //   } 
+    //   }
 
     //   for {
     //     data <- req.data
@@ -159,12 +186,12 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
     // }
 
     override def getUnwantedPartitions(req: Dataset) = {
-      val filename = "serverPartitions/partition"+req.partitionID+".txt" 
+      val filename = "serverPartitions/partition"+req.partitionID+".txt"
       val partition = new File(filename)
 
       if(!partition.exists()){  //Files.exists(Paths.get(filename))
         partition.createNewFile()
-      } 
+      }
 
       val printWriter: PrintWriter = new PrintWriter(new FileWriter(partition, true));
 

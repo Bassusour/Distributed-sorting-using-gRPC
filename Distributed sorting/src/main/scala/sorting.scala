@@ -55,32 +55,6 @@ class sorting {
     }
     bw.close()
   }
-
-  def defineRanges(min: String, max: String, numberSlaves: Int): Seq[String] = {
-    val minChar = min.toCharArray
-    val maxChar = max.toCharArray
-    val minInt = new Array[Int](10)
-    val maxInt = new Array[Int](10)
-    val interval = new Array[Int](10)
-
-    for (ind <- 0 to 9){
-      minInt(ind) = minChar(ind).toInt
-      maxInt(ind) = maxChar(ind).toInt
-      interval(ind) = (maxInt(ind) - minInt(ind)).abs / numberSlaves
-    }
-
-    var ranges: List[String] = List()
-    for (indRange <- 1 until numberSlaves){
-      var string = ""
-      for (indChar <- List(0,1,2,3,4,5,6,7,8,9)) {
-        var char = (minInt(indChar) + indRange*interval(indChar)).toChar
-        if (char > 126) char = 126
-        string = string + char
-      }
-      ranges = string :: ranges
-    }
-    ranges.sorted
-  }
 }
 
 object Main extends App {
@@ -91,6 +65,4 @@ object Main extends App {
   println(toSort)
   val ranges = Seq("!!!!!!!!!!", "T~:]~M?eKB", "~~~~~~~~~~")
   println(sort.separatePartition(ranges, toSort))*/
-
-  println(sort.defineRanges(""))
 }
