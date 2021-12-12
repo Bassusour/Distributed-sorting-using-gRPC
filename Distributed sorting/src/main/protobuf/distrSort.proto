@@ -3,15 +3,12 @@ syntax = "proto3";
 package protoDistrSorting;
 
 service DistrSorting {
-  rpc assignID(ConnectionInformation) returns (ID) {}
+  rpc assignID(DummyText) returns (ID) {}
+  rpc getConnectionInformation(ConnectionInformation) returns (DummyText) {}
+  rpc sendConnectionInformation(DummyText) returns (ConnectionInformations) {}
   rpc determineKeyRange(KeyRange) returns (DummyText) {}
   rpc isDonePartitioning(DummyText) returns (DummyText) {}
   rpc sendPartitionedValues(DummyText) returns (PartitionedValues) {}
-  rpc getUnwantedPartitions(Dataset) returns (DummyText) {}
-  rpc sendWantedPartitions(ID) returns (Dataset) {}
-  rpc waitForAllWorkers(DummyText) returns (DummyText) {}
-  rpc isDoneReceivingPartitions(DummyText) returns (DummyText) {}
-  rpc resetCounters(DummyText) returns (DummyText) {}
 }
 
 message KeyRange {
@@ -26,6 +23,11 @@ message ID {
 message ConnectionInformation {
   string host = 1;
   int32 port = 2;
+  int32 id = 3;
+}
+
+message ConnectionInformations {
+  repeated ConnectionInformation information = 1;
 }
 
 message DummyText {
@@ -43,6 +45,7 @@ message Partition {
 message Dataset {
   repeated Data data = 1;
   int32 partitionID = 2;
+  int32 fromUserID = 3;
 }
 
 message Data {

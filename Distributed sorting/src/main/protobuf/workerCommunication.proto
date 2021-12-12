@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package protoDistrSorting;
+
+import "distrSort.proto";
+
+service WorkerConnections {
+  rpc getWantedPartitions(Dataset) returns (DummyText) {}
+}

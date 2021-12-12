@@ -45,14 +45,14 @@ class sorting {
     list.filter(inRange(_, beginning, end))
   }
 
-  def separatePartition(allPartitions : Seq[Partition], notPartitioned : List[String]) : Seq[List[String]] = {
-    var separatedList: Seq[List[String]] = Seq()
-    for(i <- 0 to allPartitions.length-2) {
-      val partition = this.partition(notPartitioned, allPartitions.apply(i).val, allPartitions.apply(i+1).val)
-      separatedList = separatedList:+ partition
-    }
-    separatedList
-  }
+  // def separatePartition(allPartitions : Seq[Partition], notPartitioned : List[String]) : Seq[List[String]] = {
+  //   var separatedList: Seq[List[String]] = Seq()
+  //   for(i <- 0 to allPartitions.length-2) {
+  //     val partition = this.partition(notPartitioned, allPartitions.apply(i).val, allPartitions.apply(i+1).val)
+  //     separatedList = separatedList:+ partition
+  //   }
+  //   separatedList
+  // }
 
   def getLocalKeys(partitionNumber : Int, noWorkers : Int) : List[String] = {
     var keys : List[String] = List()
