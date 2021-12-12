@@ -11,7 +11,7 @@ class sorting {
     "gensort -a " + numberKeys + " " + fileName !!
   }
 
-  def getData(inputDirectories : List[String]) : List[String] = {
+  def getData(inputDirectories : List[String], delete : Int) : List[String] = {
     def getListOfFiles(dir: String): List[String] = {
       val file = new File(dir)
       file.listFiles.filter(_.isFile)
@@ -23,6 +23,7 @@ class sorting {
       val listFiles = getListOfFiles(directory)
       listFiles.foreach(file => {
         keys = keys ::: this.toList(file)
+        if(delete == 1) new File(file).delete()
       })
     })
     keys
@@ -58,12 +59,12 @@ class sorting {
     list.filter(inRange(_, beginning, end, maxKey, isLastPart))
   }
 
-  def separatePartition(allPartitions : Seq[String], notPartitioned : List[String], maxKey : String) : Seq[List[String]] = {
+  def separatePartition(allPartitions : Seq[Partition], notPartitioned : List[String], maxKey : String) : Seq[List[String]] = {
     var separatedList: Seq[List[String]] = Seq()
     for(i <- 0 to allPartitions.length-2) {
       var partition :List[String] = List()
-      if(i == allPartitions.length-2) partition = this.partition(notPartitioned, allPartitions.apply(i), allPartitions.apply(i+1), maxKey, 1)
-      else partition = this.partition(notPartitioned, allPartitions.apply(i), allPartitions.apply(i+1), maxKey, 0)
+      if(i == allPartitions.length-2) partition = this.partition(notPartitioned, allPartitions.apply(i).value, allPartitions.apply(i+1).value, maxKey, 1)
+      else partition = this.partition(notPartitioned, allPartitions.apply(i).value, allPartitions.apply(i+1).value, maxKey, 0)
       separatedList = separatedList:+ partition
     }
     separatedList

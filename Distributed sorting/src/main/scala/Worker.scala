@@ -59,7 +59,7 @@ object Worker {
         sorting.generateData("data" + client.getID(), numberKeys)
         locallySorted = sorting.toList("data")
       }
-      else locallySorted = sorting.getData(inputDirectories)
+      else locallySorted = sorting.getData(inputDirectories, 0)
 
       // Local sort
       locallySorted = locallySorted.sorted
@@ -100,8 +100,8 @@ object Worker {
 
       // sort local partitions - Edwige
       //val localPartition = sorting.getLocalKeys(outputDirectory, client.id, client.noWorkers)
-      val localPartition = sorting.getData(List(outputDirectory))
-      sorting.writeInFile(localPartition.sorted, outputDirectory + "/partition" + client.id)
+      val localPartition = sorting.getData(List(outputDirectory), 1)
+      sorting.writeInFile(localPartition.sorted, outputDirectory + "/partition." + client.id)
 
       client.workerServer.awaitTermination(2, TimeUnit.SECONDS)
     } finally {
@@ -116,7 +116,6 @@ class Worker private(
   private val outputDirectory: String
 ) { self =>
   var id: Int = 0;
-  // var myPartition: Partition = Partition("")
   private var globalMaxKey = ""
   private var allPartitions: Seq[Partition] = Seq()
   private var noWorkers: Int = 0
@@ -174,9 +173,7 @@ class Worker private(
     val response = blockingStub.sendPartitionedValues(request)
     allPartitions = response.partitions
     globalMaxKey = response.globalMax
-    // myPartition = allPartitions(id)
     noWorkers = allPartitions.size
-    // logger.info("Seq: " + response.partitions + " noWorkers: " + noWorkers)
   }
 
   def makeServer() = {
@@ -216,10 +213,8 @@ class Worker private(
 
 
   private class WorkerConnectionImpl(id: Int) extends WorkerConnectionsGrpc.WorkerConnections {
-    // +req.fromUserID.toString+
     override def getWantedPartitions(req: Dataset) = {
       val filename = outputDirectory+"/partition"+req.fromUserID.toString+"."+req.partitionID
-      // val filename = "clientPartitions/client"+id.toString+"/partition"+req.partitionID
       val partition = new File(filename)
       val printWriter: PrintWriter = new PrintWriter(new FileWriter(partition, true));
 

@@ -47,7 +47,7 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
     server = ServerBuilder.forPort(Master.port)
                 .addService(DistrSortingGrpc.bindService(new DistrSortingImpl, executionContext))
                 .build.start
-    Master.logger.info("127.0.0.1:50051")
+    Master.logger.info("127.0.0.1:45012")
     sys.addShutdownHook {
       System.err.println("*** shutting down gRPC server since JVM is shutting down")
       self.stop()
