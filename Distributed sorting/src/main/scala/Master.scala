@@ -29,7 +29,7 @@ object Master {
     server.blockUntilShutdown()
   }
 
-  private val port = 50051
+  private val port = 45012
 }
 
 class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
@@ -129,7 +129,7 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
           interval(ind) = (maxInt(ind) - minInt(ind)).abs / numberSlaves
         }
 
-        var ranges: List[Partition] = List(Partition(min))
+        var ranges: List[Partition] = List(Partition(min.take(10)))
         for (indRange <- 1 until numberSlaves){
           var string = ""
           for (indChar <- List(0,1,2,3,4,5,6,7,8,9)) {
@@ -139,13 +139,11 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
           }
           ranges = Partition(string) :: ranges
         }
-        // (Partition(max) :: ranges).sorted
-        ranges:+Partition(max)
+        (Partition(max.take(10)) :: ranges).reverse
       }
 
       var partitions = defineRanges(globalMinKey, globalMaxKey, noWorkers)
-
-      val reply = PartitionedValues(partitions = partitions)
+      val reply = PartitionedValues(partitions = partitions, globalMax = globalMaxKey)
       // val reply = PartitionedValues(Seq(Partition("a")))
       Future.successful(reply)
     }

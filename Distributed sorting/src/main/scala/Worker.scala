@@ -23,10 +23,10 @@ import scala.language.postfixOps
 // Companion object
 object Worker {
   // Constructor
-  def apply(host: String, port: Int): Worker = {
+  def apply(host: String, port: Int, outputDirectory: String): Worker = {
     val channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build
     val blockingStub = DistrSortingGrpc.blockingStub(channel)
-    new Worker(channel, blockingStub)
+    new Worker(channel, blockingStub, outputDirectory)
   }
 
   def main(args: Array[String]): Unit = {
@@ -48,7 +48,7 @@ object Worker {
     }
     else if(args(1) == "-N") numberKeys = args(2).toInt
 
-    val client = Worker(host, port)
+    val client = Worker(host, port, outputDirectory)
     try {
       client.getID()
       client.sendConnectionInformation()
@@ -75,27 +75,32 @@ object Worker {
         Thread.sleep(1000)
       }
       
-      // client.getPartitions()
+      client.getPartitions()
 
       // Split keys into partitions here (and sort them) - Edwige
-      val partitionedList = sorting.separatePartition(client.allPartitions, locallySorted)
+      println(client.allPartitions)
+      val partitionedList = sorting.separatePartition(client.allPartitions, locallySorted, client.globalMaxKey)
       var indice = 0
       for(part <- partitionedList){
+        println(part)
         sorting.writeInFile(part, outputDirectory + "/partition" + client.id + "." + indice)
         indice = indice +1
       }
-
+      
       val connectionInformation = client.getConnectionInformations
       val stubs = client.makeStubs(connectionInformation)
 
-      //Sends partitions to correct workers
+      // Sends partitions to correct workers
       for {
         (stub, id) <- stubs
         partition = client.getPartition(id)
       } yield(stub.getWantedPartitions(partition))
 
+      Thread.sleep(1000)
+
       // sort local partitions - Edwige
-      val localPartition = sorting.getLocalKeys(client.id, client.noWorkers)
+      //val localPartition = sorting.getLocalKeys(outputDirectory, client.id, client.noWorkers)
+      val localPartition = sorting.getData(List(outputDirectory))
       sorting.writeInFile(localPartition.sorted, outputDirectory + "/partition" + client.id)
 
       client.workerServer.awaitTermination(2, TimeUnit.SECONDS)
@@ -107,10 +112,12 @@ object Worker {
 
 class Worker private(
   private val channel: ManagedChannel,
-  private val blockingStub: DistrSortingBlockingStub
+  private val blockingStub: DistrSortingBlockingStub,
+  private val outputDirectory: String
 ) { self =>
   var id: Int = 0;
-  var myPartition: Partition = Partition("")
+  // var myPartition: Partition = Partition("")
+  private var globalMaxKey = ""
   private var allPartitions: Seq[Partition] = Seq()
   private var noWorkers: Int = 0
   private var host: String = ""
@@ -125,7 +132,7 @@ class Worker private(
   def getID(): Unit = {
     val request = DummyText(dummyText = "Give me an ID")
     val response = blockingStub.assignID(request)
-    logger.info("ID: " + response.id)
+    // logger.info("ID: " + response.id)
     id = response.id;
     host = "127.0.0.1"
     port = 50052+id
@@ -134,7 +141,7 @@ class Worker private(
   def sendConnectionInformation(): Unit = {
     val request = ConnectionInformation(host = host, port = port, id = id)
     val response = blockingStub.getConnectionInformation(request)
-    logger.info("Sent connection information")
+    // logger.info("Sent connection information")
   }
 
   def getConnectionInformations() = {
@@ -143,16 +150,17 @@ class Worker private(
   }
 
   def sendKeyRange(min: String, max: String): Unit = {
-    logger.info("Sending key range ...")
+    // logger.info("Sending key range ...")
     val request = KeyRange(minKey = min, maxKey = max)
     val response = blockingStub.determineKeyRange(request)
-    logger.info(response.dummyText)
+    // logger.info(response.dummyText)
+    print()
   }
 
   def askIfDonePartitioning(): Boolean = {
     val request = DummyText(dummyText = "Are you done partitioning?")
     val response = blockingStub.isDonePartitioning(request)
-    logger.info(response.dummyText)
+    // logger.info(response.dummyText)
     if(response.dummyText == "Received all key ranges") {
       return true
     } else {
@@ -165,9 +173,10 @@ class Worker private(
     val request = DummyText(dummyText = "Can I get partitions plz? :)")
     val response = blockingStub.sendPartitionedValues(request)
     allPartitions = response.partitions
-    myPartition = allPartitions(id)
+    globalMaxKey = response.globalMax
+    // myPartition = allPartitions(id)
     noWorkers = allPartitions.size
-    logger.info("Seq: " + response.partitions + " noWorkers: " + noWorkers)
+    // logger.info("Seq: " + response.partitions + " noWorkers: " + noWorkers)
   }
 
   def makeServer() = {
@@ -189,7 +198,7 @@ class Worker private(
   }
 
   def getPartition(partitionID: Int) = {
-    val filename = "src/main/scala/testFile."+partitionID
+    val filename = outputDirectory+"/partition"+id.toString+"."+partitionID
     try {
       val dataList = Source.fromFile(filename).getLines.toList
       val dataSeq = for {
@@ -197,7 +206,7 @@ class Worker private(
                       dataValues = dataLine.split(" ", 2)
                     } yield (Data(key = dataValues(0), value = dataValues(1)))
       val reply = Dataset(data = dataSeq, partitionID = partitionID, fromUserID = self.id)
-      // new File(filename).delete()
+      new File(filename).delete()
       reply
     } catch {
       // Partition doesn't exist
@@ -209,7 +218,8 @@ class Worker private(
   private class WorkerConnectionImpl(id: Int) extends WorkerConnectionsGrpc.WorkerConnections {
     // +req.fromUserID.toString+
     override def getWantedPartitions(req: Dataset) = {
-      val filename = "clientPartitions/client"+id.toString+"/partition"+req.partitionID
+      val filename = outputDirectory+"/partition"+req.fromUserID.toString+"."+req.partitionID
+      // val filename = "clientPartitions/client"+id.toString+"/partition"+req.partitionID
       val partition = new File(filename)
       val printWriter: PrintWriter = new PrintWriter(new FileWriter(partition, true));
 

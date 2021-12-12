@@ -19,9 +19,10 @@ class sorting {
     }
     var keys : List[String] = List()
     inputDirectories.foreach( directory => {
+      println(directory)
       val listFiles = getListOfFiles(directory)
       listFiles.foreach(file => {
-        keys = keys ::: this.toList(directory)
+        keys = keys ::: this.toList(file)
       })
     })
     keys
@@ -51,11 +52,11 @@ class sorting {
     list
   }
 
-  def partition (list: List[String], beginning: String, end: String ): List[String] = {
+  def partition (list: List[String], beginning: String, end: String): List[String] = {
     list.filter(inRange(_, beginning, end))
   }
 
-  def separatePartition(allPartitions : Seq[Partition], notPartitioned : List[String]) : Seq[List[String]] = {
+  def separatePartition(allPartitions : Seq[Partition], notPartitioned : List[String], maxKey : String) : Seq[List[String]] = {
     var separatedList: Seq[List[String]] = Seq()
     for(i <- 0 to allPartitions.length-2) {
       val partition = this.partition(notPartitioned, allPartitions.apply(i).value, allPartitions.apply(i+1).value)
@@ -64,13 +65,13 @@ class sorting {
     separatedList
   }
 
-  def getLocalKeys(partitionNumber : Int, noWorkers : Int) : List[String] = {
-    var keys : List[String] = List()
-    for(workerNumber <- 0 until noWorkers) {
-      keys = "partition" + workerNumber + "." + partitionNumber :: keys
-    }
-    this.getData(keys)
-  }
+  // def getLocalKeys(outputDir : String, partitionNumber : Int, noWorkers : Int) : List[String] = {
+  //   var keys : List[String] = List()
+  //   for(workerNumber <- 0 until noWorkers) {
+  //     keys = outputDir + "partition" + workerNumber + "." + partitionNumber :: keys
+  //   }
+  //   this.getData(keys)
+  // }
 
   def writeInFile(keys : List[String], fileName : String) : Unit ={
     val bw = new BufferedWriter(new FileWriter(fileName))

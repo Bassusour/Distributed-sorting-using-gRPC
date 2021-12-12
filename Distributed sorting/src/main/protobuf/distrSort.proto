@@ -36,6 +36,7 @@ message DummyText {
 
 message PartitionedValues {
   repeated Partition partitions = 1;
+  string globalMax = 2;
 }
 
 message Partition {
