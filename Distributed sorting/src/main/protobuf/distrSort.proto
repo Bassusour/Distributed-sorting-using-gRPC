@@ -39,8 +39,7 @@ message PartitionedValues {
 }
 
 message Partition {
-  string minVal = 1;
-  string maxVal = 2;
+  string value = 1;
 }
 
 message Dataset {
