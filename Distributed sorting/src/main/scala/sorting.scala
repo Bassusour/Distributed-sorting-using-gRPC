@@ -10,9 +10,17 @@ class sorting {
   }
 
   def getData(inputDirectories : List[String]) : List[String] = {
+    def getListOfFiles(dir: String): List[String] = {
+      val file = new File(dir)
+      file.listFiles.filter(_.isFile)
+        .map(_.getPath).toList
+    }
     var keys : List[String] = List()
     inputDirectories.foreach( directory => {
-      keys = keys ::: this.toList(directory)
+      val listFiles = getListOfFiles(directory)
+      listFiles.foreach(file => {
+        keys = keys ::: this.toList(directory)
+      })
     })
     keys
   }
@@ -45,14 +53,14 @@ class sorting {
     list.filter(inRange(_, beginning, end))
   }
 
-  // def separatePartition(allPartitions : Seq[Partition], notPartitioned : List[String]) : Seq[List[String]] = {
-  //   var separatedList: Seq[List[String]] = Seq()
-  //   for(i <- 0 to allPartitions.length-2) {
-  //     val partition = this.partition(notPartitioned, allPartitions.apply(i).val, allPartitions.apply(i+1).val)
-  //     separatedList = separatedList:+ partition
-  //   }
-  //   separatedList
-  // }
+  def separatePartition(allPartitions : Seq[Partition], notPartitioned : List[String]) : Seq[List[String]] = {
+    var separatedList: Seq[List[String]] = Seq()
+    for(i <- 0 to allPartitions.length-2) {
+      val partition = this.partition(notPartitioned, allPartitions.apply(i).value, allPartitions.apply(i+1).value)
+      separatedList = separatedList:+ partition
+    }
+    separatedList
+  }
 
   def getLocalKeys(partitionNumber : Int, noWorkers : Int) : List[String] = {
     var keys : List[String] = List()
