@@ -61,7 +61,6 @@ object Worker {
       }
       else locallySorted = sorting.getData(inputDirectories)
 
-
       // Local sort
       locallySorted = locallySorted.sorted
 
