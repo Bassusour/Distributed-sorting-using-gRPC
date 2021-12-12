@@ -23,50 +23,51 @@ import scala.language.postfixOps
 // Companion object
 object Worker {
   // Constructor
-  def apply(): Worker = {
-    val channel = ManagedChannelBuilder.forAddress("127.0.0.1", 50051).usePlaintext().build
+  def apply(host: String, port: Int): Worker = {
+    val channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build
     val blockingStub = DistrSortingGrpc.blockingStub(channel)
     new Worker(channel, blockingStub)
   }
 
   def main(args: Array[String]): Unit = {
-    // val masterIP = args(0) <-- needs port
-    // var inputDirectories: List[String] = List()
-    // var outputDirectory = ""
-    // var numberKeys = 0
-    // var withGeneratedFiles = 0
-    // if(args(1) == "-I"){
-    //   withGeneratedFiles = 1
-    //   var indice = 2
-    //   while (args(indice) != "-O"){
-    //     inputDirectories = args(indice) :: inputDirectories
-    //     indice = indice + 1
-    //   }
-    //   outputDirectory = args(indice +1)
-    // }
-    // else if(args(1) == "-N") numberKeys = args(2)
+    val masterIP = args(0).split(":") 
+    val host = masterIP(0)
+    val port = masterIP(1).toInt
+    var inputDirectories: List[String] = List()
+    var outputDirectory = ""
+    var numberKeys = 0
+    var withGeneratedFiles = 0
+    if(args(1) == "-I"){
+      withGeneratedFiles = 1
+      var indice = 2
+      while (args(indice) != "-O"){
+        inputDirectories = args(indice) :: inputDirectories
+        indice = indice + 1
+      }
+      outputDirectory = args(indice +1)
+    }
+    else if(args(1) == "-N") numberKeys = args(2).toInt
 
-    val client = Worker()
+    val client = Worker(host, port)
     try {
       client.getID()
       client.sendConnectionInformation()
       
-      // val sorting = new sorting()
-      // var locallySorted : List[String] = List()
-      // if(withGeneratedFiles == 0){
-      //   sorting.generateData("data" + client.getID(), numberKeys)
-      //   locallySorted = sorting.toList("data")
-      // }
-      // else locallySorted = sorting.getData(inputDirectories)
-
+      val sorting = new sorting()
+      var locallySorted : List[String] = List()
+      if(withGeneratedFiles == 0){
+        sorting.generateData("data" + client.getID(), numberKeys)
+        locallySorted = sorting.toList("data")
+      }
+      else locallySorted = sorting.getData(inputDirectories)
 
       // Local sort
-      // locallySorted = locallySorted.sorted
+      locallySorted = locallySorted.sorted
 
       // Get min and max key
-      // val min = locallySorted.head
-      // val max = locallySorted.last
-      client.sendKeyRange("abc", "jkl")
+      val min = locallySorted.head
+      val max = locallySorted.last
+      client.sendKeyRange(min, max)
       
       client.makeServer()
       
@@ -77,12 +78,12 @@ object Worker {
       // client.getPartitions()
 
       // Split keys into partitions here (and sort them) - Edwige
-      // val partitionedList = sorting.separatePartition(client.allPartitions, locallySorted)
-      // var indice = 0
-      // for(part <- partitionedList){
-      //   sorting.writeInFile(part, outputDirectory + "/partition" + client.id + "." + indice)
-      //   indice = indice +1
-      // }
+      val partitionedList = sorting.separatePartition(client.allPartitions, locallySorted)
+      var indice = 0
+      for(part <- partitionedList){
+        sorting.writeInFile(part, outputDirectory + "/partition" + client.id + "." + indice)
+        indice = indice +1
+      }
 
       val connectionInformation = client.getConnectionInformations
       val stubs = client.makeStubs(connectionInformation)
@@ -94,8 +95,8 @@ object Worker {
       } yield(stub.getWantedPartitions(partition))
 
       // sort local partitions - Edwige
-      // val localPartition = sort.getLocalKeys(client.id, client.noWorkers)
-      // sorting.writeInFile(localPartition.sorted, outputDirectory + "/partition" + client.id)
+      val localPartition = sorting.getLocalKeys(client.id, client.noWorkers)
+      sorting.writeInFile(localPartition.sorted, outputDirectory + "/partition" + client.id)
 
       client.workerServer.awaitTermination(2, TimeUnit.SECONDS)
     } finally {
@@ -109,7 +110,7 @@ class Worker private(
   private val blockingStub: DistrSortingBlockingStub
 ) { self =>
   var id: Int = 0;
-  var myPartition: Partition = Partition("","")
+  var myPartition: Partition = Partition("")
   private var allPartitions: Seq[Partition] = Seq()
   private var noWorkers: Int = 0
   private var host: String = ""
@@ -221,7 +222,7 @@ class Worker private(
       } yield (printWriter.append(data.key + " " + data.value + "\n"))
 
       printWriter.close();
-      Future.successful(DummyText("Got unwanted data"))
+      Future.successful(DummyText("Got partitions"))
     }
   }
 }

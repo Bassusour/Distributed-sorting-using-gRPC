@@ -39,7 +39,7 @@ message PartitionedValues {
 }
 
 message Partition {
-  string val = 1;
+  string value = 1;
 }
 
 message Dataset {

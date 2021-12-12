@@ -116,36 +116,37 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
     }
 
     override def sendPartitionedValues(req: DummyText) = {
-      // def defineRanges(min: String, max: String, numberSlaves: Int): List[Partition] = {
-      //   val minChar = min.toCharArray
-      //   val maxChar = max.toCharArray
-      //   val minInt = new Array[Int](10)
-      //   val maxInt = new Array[Int](10)
-      //   val interval = new Array[Int](10)
+      def defineRanges(min: String, max: String, numberSlaves: Int): List[Partition] = {
+        val minChar = min.toCharArray
+        val maxChar = max.toCharArray
+        val minInt = new Array[Int](10)
+        val maxInt = new Array[Int](10)
+        val interval = new Array[Int](10)
 
-      //   for (ind <- 0 to 9){
-      //     minInt(ind) = minChar(ind).toInt
-      //     maxInt(ind) = maxChar(ind).toInt
-      //     interval(ind) = (maxInt(ind) - minInt(ind)).abs / numberSlaves
-      //   }
+        for (ind <- 0 to 9){
+          minInt(ind) = minChar(ind).toInt
+          maxInt(ind) = maxChar(ind).toInt
+          interval(ind) = (maxInt(ind) - minInt(ind)).abs / numberSlaves
+        }
 
-      //   var ranges: List[String] = List(Partition(min))
-      //   for (indRange <- 1 until numberSlaves){
-      //     var string = ""
-      //     for (indChar <- List(0,1,2,3,4,5,6,7,8,9)) {
-      //       var char = (minInt(indChar) + indRange*interval(indChar)).toChar
-      //       if (char > 126) char = 126
-      //       string = string + char
-      //     }
-      //     ranges = Partition(string) :: ranges
-      //   }
-      //   (Partition(max) :: ranges).sorted
-      // }
+        var ranges: List[Partition] = List(Partition(min))
+        for (indRange <- 1 until numberSlaves){
+          var string = ""
+          for (indChar <- List(0,1,2,3,4,5,6,7,8,9)) {
+            var char = (minInt(indChar) + indRange*interval(indChar)).toChar
+            if (char > 126) char = 126
+            string = string + char
+          }
+          ranges = Partition(string) :: ranges
+        }
+        // (Partition(max) :: ranges).sorted
+        ranges:+Partition(max)
+      }
 
-      // var partitions = defineRanges(globalMinKey, globalMaxKey, noWorkers
+      var partitions = defineRanges(globalMinKey, globalMaxKey, noWorkers)
 
-      // val reply = PartitionedValues(partitions = partitions)
-      val reply = PartitionedValues(Seq(Partition("a","b")))
+      val reply = PartitionedValues(partitions = partitions)
+      // val reply = PartitionedValues(Seq(Partition("a")))
       Future.successful(reply)
     }
   }

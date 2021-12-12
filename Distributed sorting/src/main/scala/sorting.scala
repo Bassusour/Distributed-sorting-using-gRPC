@@ -3,6 +3,8 @@ import java.io.{BufferedWriter, File, FileWriter}
 import scala.io.Source
 import scala.language.postfixOps
 import scala.sys.process._
+import protoDistrSorting.distrSort.{DistrSortingGrpc, ID, KeyRange, DummyText, PartitionedValues, Partition, 
+                                    Dataset, Data, ConnectionInformation, ConnectionInformations}
 
 class sorting {
   def generateData(fileName : String, numberKeys : Int): Unit = {
