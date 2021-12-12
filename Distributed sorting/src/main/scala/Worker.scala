@@ -133,7 +133,7 @@ class Worker private(
     val response = blockingStub.assignID(request)
     // logger.info("ID: " + response.id)
     id = response.id;
-    host = "127.0.0.1"
+    host = InetAddress.getLocalHost.getHostAddress
     port = 50052+id
   }
 

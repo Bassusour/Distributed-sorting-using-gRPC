@@ -17,6 +17,7 @@ import scala.concurrent.Promise
 import scala.concurrent.duration.Duration
 import java.io._
 import scala.io.Source
+import java.net._
 
 // Companion object
 object Master {
@@ -47,7 +48,7 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
     server = ServerBuilder.forPort(Master.port)
                 .addService(DistrSortingGrpc.bindService(new DistrSortingImpl, executionContext))
                 .build.start
-    Master.logger.info("127.0.0.1:45012")
+    println(s"${InetAddress.getLocalHost.getHostAddress}:${Master.port}")
     sys.addShutdownHook {
       System.err.println("*** shutting down gRPC server since JVM is shutting down")
       self.stop()
