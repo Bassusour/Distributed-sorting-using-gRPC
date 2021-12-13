@@ -19,10 +19,10 @@ import io.grpc.{Server, ServerBuilder}
 import io.grpc.ServerInterceptors;
 import io.grpc.stub.StreamObserver;
 import scala.language.postfixOps
+import java.net._
 
 // Companion object
 object Worker {
-  // Constructor
   def apply(host: String, port: Int, outputDirectory: String): Worker = {
     val channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build
     val blockingStub = DistrSortingGrpc.blockingStub(channel)
@@ -59,7 +59,7 @@ object Worker {
         sorting.generateData("data" + client.getID(), numberKeys)
         locallySorted = sorting.toList("data")
       }
-      else locallySorted = sorting.getData(inputDirectories)
+      else locallySorted = sorting.getData(inputDirectories, 0)
 
       // Local sort
       locallySorted = locallySorted.sorted
@@ -77,12 +77,10 @@ object Worker {
       
       client.getPartitions()
 
-      // Split keys into partitions here (and sort them) - Edwige
-      println(client.allPartitions)
+      // Split keys into partitions
       val partitionedList = sorting.separatePartition(client.allPartitions, locallySorted, client.globalMaxKey)
       var indice = 0
       for(part <- partitionedList){
-        println(part)
         sorting.writeInFile(part, outputDirectory + "/partition" + client.id + "." + indice)
         indice = indice +1
       }
@@ -96,14 +94,17 @@ object Worker {
         partition = client.getPartition(id)
       } yield(stub.getWantedPartitions(partition))
 
-      Thread.sleep(1000)
+      // Thread.sleep(1000)
+      println("Received all wanted partitions")
 
-      // sort local partitions - Edwige
-      //val localPartition = sorting.getLocalKeys(outputDirectory, client.id, client.noWorkers)
-      val localPartition = sorting.getData(List(outputDirectory))
-      sorting.writeInFile(localPartition.sorted, outputDirectory + "/partition" + client.id)
-
+      // Shuts down own server
       client.workerServer.awaitTermination(2, TimeUnit.SECONDS)
+      println("Shutting down own server")
+
+      // sort local partitions
+      val localPartition = sorting.getData(List(outputDirectory), 1)
+      sorting.writeInFile(localPartition.sorted, outputDirectory + "/partition." + client.id)
+      
     } finally {
       client.shutdown()
     }
@@ -116,7 +117,6 @@ class Worker private(
   private val outputDirectory: String
 ) { self =>
   var id: Int = 0;
-  // var myPartition: Partition = Partition("")
   private var globalMaxKey = ""
   private var allPartitions: Seq[Partition] = Seq()
   private var noWorkers: Int = 0
@@ -132,16 +132,16 @@ class Worker private(
   def getID(): Unit = {
     val request = DummyText(dummyText = "Give me an ID")
     val response = blockingStub.assignID(request)
-    // logger.info("ID: " + response.id)
+    logger.info("Received ID: " + response.id)
     id = response.id;
-    host = "127.0.0.1"
+    host = InetAddress.getLocalHost.getHostAddress
     port = 50052+id
   }
 
   def sendConnectionInformation(): Unit = {
     val request = ConnectionInformation(host = host, port = port, id = id)
     val response = blockingStub.getConnectionInformation(request)
-    // logger.info("Sent connection information")
+    logger.info("Sent connection information")
   }
 
   def getConnectionInformations() = {
@@ -150,17 +150,16 @@ class Worker private(
   }
 
   def sendKeyRange(min: String, max: String): Unit = {
-    // logger.info("Sending key range ...")
     val request = KeyRange(minKey = min, maxKey = max)
     val response = blockingStub.determineKeyRange(request)
+    logger.info("Sent key range")
     // logger.info(response.dummyText)
-    print()
+    // print()
   }
 
   def askIfDonePartitioning(): Boolean = {
     val request = DummyText(dummyText = "Are you done partitioning?")
     val response = blockingStub.isDonePartitioning(request)
-    // logger.info(response.dummyText)
     if(response.dummyText == "Received all key ranges") {
       return true
     } else {
@@ -169,14 +168,12 @@ class Worker private(
   }
 
   def getPartitions(): Unit = {
-    logger.info("Asking for partitions")
     val request = DummyText(dummyText = "Can I get partitions plz? :)")
     val response = blockingStub.sendPartitionedValues(request)
+    logger.info("Got partition ranges from master")
     allPartitions = response.partitions
     globalMaxKey = response.globalMax
-    // myPartition = allPartitions(id)
     noWorkers = allPartitions.size
-    // logger.info("Seq: " + response.partitions + " noWorkers: " + noWorkers)
   }
 
   def makeServer() = {
@@ -184,6 +181,7 @@ class Worker private(
     workerServer = ServerBuilder.forPort(port)
                     .addService(WorkerConnectionsGrpc.bindService(new WorkerConnectionImpl(self.id), executionContext))
                     .build.start
+    logger.info("Own server started up...")
   }
 
   def makeStubs(connectionInfo: ConnectionInformations) = {
@@ -216,12 +214,10 @@ class Worker private(
 
 
   private class WorkerConnectionImpl(id: Int) extends WorkerConnectionsGrpc.WorkerConnections {
-    // +req.fromUserID.toString+
     override def getWantedPartitions(req: Dataset) = {
       val filename = outputDirectory+"/partition"+req.fromUserID.toString+"."+req.partitionID
-      // val filename = "clientPartitions/client"+id.toString+"/partition"+req.partitionID
       val partition = new File(filename)
-      val printWriter: PrintWriter = new PrintWriter(new FileWriter(partition, true));
+      val printWriter: PrintWriter = new PrintWriter(partition);
 
       if(!partition.exists()){
         partition.createNewFile()
