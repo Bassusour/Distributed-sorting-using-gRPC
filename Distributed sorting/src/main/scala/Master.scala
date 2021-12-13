@@ -145,7 +145,6 @@ class Master(executionContext: ExecutionContext, noWorkers: Int) { self =>
 
       var partitions = defineRanges(globalMinKey, globalMaxKey, noWorkers)
       val reply = PartitionedValues(partitions = partitions, globalMax = globalMaxKey)
-      // val reply = PartitionedValues(Seq(Partition("a")))
       Future.successful(reply)
     }
   }
