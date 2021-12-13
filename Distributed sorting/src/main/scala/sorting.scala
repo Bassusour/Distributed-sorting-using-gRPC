@@ -58,6 +58,14 @@ class sorting {
     list.filter(inRange(_, beginning, end, maxKey, isLastPart))
   }
 
+     var separatedList: Seq[List[String]] = Seq()
+    for(i <- 0 to allPartitions.length-2) {
+      val partition = this.partition(notPartitioned, allPartitions.apply(i).value, allPartitions.apply(i+1).value)
+      separatedList = separatedList:+ partition
+    }
+    separatedList
+  }
+
   def separatePartition(allPartitions : Seq[String], notPartitioned : List[String], maxKey : String) : Seq[List[String]] = {
     var separatedList: Seq[List[String]] = Seq()
     for(i <- 0 to allPartitions.length-2) {
