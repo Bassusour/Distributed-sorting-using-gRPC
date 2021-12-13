@@ -97,8 +97,8 @@ object Worker {
       // Thread.sleep(1000)
       println("Received all wanted partitions")
 
-      // Shuts down own server
-      client.workerServer.awaitTermination(2, TimeUnit.SECONDS)
+      // Shuts down own server             6 60 180
+      client.workerServer.awaitTermination(200, TimeUnit.SECONDS)
       println("Shutting down own server")
 
       // sort local partitions
@@ -180,7 +180,9 @@ class Worker private(
     val executionContext = ExecutionContext.global
     workerServer = ServerBuilder.forPort(port)
                     .addService(WorkerConnectionsGrpc.bindService(new WorkerConnectionImpl(self.id), executionContext))
-                    .build.start
+                    .maxInboundMessageSize(2147483647)
+                    .build
+                    .start
     logger.info("Own server started up...")
   }
 

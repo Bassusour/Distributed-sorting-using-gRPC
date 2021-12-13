@@ -20,7 +20,6 @@ class sorting {
     }
     var keys : List[String] = List()
     inputDirectories.foreach( directory => {
-      println(directory)
       val listFiles = getListOfFiles(directory)
       listFiles.foreach(file => {
         keys = keys ::: this.toList(file)
